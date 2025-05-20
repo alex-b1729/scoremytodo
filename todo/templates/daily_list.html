@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block title %}{{ dailylist.date }} | {{ block.super }}{% endblock title %}
+
+{% block content %}
+{% if tasks %}
+<ol>
+    {% for task in tasks %}
+    <li>{{ task.description }}</li>
+    {% endfor %}
+</ol>
+{% endif %}
+{% endblock content %}

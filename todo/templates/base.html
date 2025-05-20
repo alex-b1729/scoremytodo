@@ -1,0 +1,43 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        {% block head %}
+        <!-- meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+        <!-- favicon -->
+        <link rel="shortcut icon" type="image/png" href="{% static 'images/favicon.webp' %}"/>
+
+        <link rel="stylesheet" href="{% static 'css/base.css' %}"/>
+        {% endblock %}
+
+        <title>{% block title %}ScoreMyTodo{% endblock %}</title>
+    </head>
+    <body>
+        {% block nav %}
+        {% include 'partials/nav.html' %}
+        {% endblock %}
+
+        {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <li class="{{ message.tags }}">
+                    {{ message|safe }}
+                    {# <a href="#" class="close">x</a> #}
+                </li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+
+        <div id="content" class="">
+            {% block content %}
+            {% endblock %}
+        </div>
+
+        {% block footer %}
+        {% include 'partials/footer.html' %}
+        {% endblock %}
+    </body>
+</html>

@@ -4,7 +4,7 @@ from django.db import models
 from django.urls import reverse
 from django.conf import settings
 
-from .fields import OrderField
+from todo.fields import OrderField
 
 
 class DailyList(models.Model):
@@ -12,6 +12,8 @@ class DailyList(models.Model):
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         editable=False,
+        blank=True,
+        null=True,
     )
     uid = models.UUIDField(
         default=uuid.uuid4,
@@ -37,7 +39,7 @@ class DailyList(models.Model):
         return f'{self.owner.username}: {self.created}'
 
     def get_absolute_url(self):
-        return reverse('daily_task', args=[str(self.uid)])
+        return reverse('daily_list', args=[str(self.uid)])
 
 
 class Task(models.Model):

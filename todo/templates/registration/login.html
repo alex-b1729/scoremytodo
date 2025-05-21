@@ -1,38 +1,32 @@
-{% extends 'base.html' %}
+{% extends "center_card.html" %}
 
-{% block title %}Log in{% endblock %}
+{% block title %}Log in {{ block.super }}{% endblock %}
 
-{% block content %}
+{% block card %}
+<div class="card-body text-center">
+  <form method="post">
+    <div>Username {{ form.username.errors }}</div>
+    <p>{{ form.username }}</p>
+    <div>{{ form.password.label }} {{ form.password.errors }}</div>
+    <p>{{ form.password }}</p>
+    <div class="card-text">
+      <input class="btn btn-primary" type="submit" value="Log in">
+    </div>
+    {% csrf_token %}
+  </form>
+</div>
 
-{% if form.errors %}
-<p>Your username and password didn't match. Please try again.</p>
-{% endif %}
+<div class="card-footer d-flex flex-column">
+  {% if form.non_field_errors %}
+  <ul>
+    {% for e in form.non_field_errors %}
+    <li class="text-danger">{{ e }}</li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+  <p class="mb-1 fw-light"><a href="{% url 'password_reset' %}">Forgot password?</a></p>
+  <p class="fw-light">Don't have an account? <a href="{% url 'register' %}">Sign up.</a></p>
+</div>
+{% endblock %}
 
-{% if next %}
-    {% if user.is_authenticated %}
-    <p>Your account doesn't have access to this page. To proceed,
-    please login with an account that has access.</p>
-    {% endif %}
-{% endif %}
-
-<form method="post" action="{% url 'login' %}">
-{% csrf_token %}
-<table>
-<tr>
-    <td>{{ form.username.label_tag }}</td>
-    <td>{{ form.username }}</td>
-</tr>
-<tr>
-    <td>{{ form.password.label_tag }}</td>
-    <td>{{ form.password }}</td>
-</tr>
-</table>
-
-<input type="submit" value="login">
-<input type="hidden" name="next" value="{{ next }}">
-</form>
-
-<p><a href="{% url 'password_reset' %}">Lost password?</a></p>
-<p><a href="{% url 'register' %}">Register</a></p>
-
-{% endblock content %}
+{% block footer %}{% endblock %}

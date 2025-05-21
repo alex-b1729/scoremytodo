@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{% endblock %}
+
+{% block content %}
+{% block nav %}{% endblock nav %}
+<div class="d-flex justify-content-center position-absolute top-50 start-50 translate-middle">
+  <div class="align-self-center">
+    <div class="d-flex justify-content-center mb-3">
+      <a href="/">
+        <img src="{% static 'images/favicon.webp' %}" alt="Contacts Logo" width="48" height="48" class="">
+      </a>
+    </div>
+    <div class="card shadow" style="width: {{ card_width|default:18 }}rem;">
+      {% block card %}{% endblock %}
+    </div>
+  </div>
+</div>
+{% endblock %}

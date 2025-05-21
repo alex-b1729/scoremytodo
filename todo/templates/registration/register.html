@@ -1,85 +1,89 @@
-{% extends 'base.html' %}
+{% extends "center_card.html" %}
 
 {% block title %}Create an account{% endblock %}
 
-{% block content %}
-<h5 class="">Create your account</h5>
+{% block card %}
+<div class="card-header">
+    <h5 class="card-title">Create your account</h5>
+</div>
 
-<form method="post">
-    {% csrf_token %}
-    <ul class="list-group list-group-flush">
-        <li class="list-group-item">  {# username email section #}
-            <div class="mb-3">
-                <label for="{{ form.username.id_for_label }}" class="form-label">
-                    {{ form.username.label }}
-                </label>
-                {{ form.username }}
-                <div id="{{ form.username.id_for_label }}" class="form-text">
-                    {{ form.username.help_text }}
+<div class="card-body text-center">
+    <form method="post">
+        {% csrf_token %}
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">  {# username email section #}
+                <div class="mb-3">
+                    <label for="{{ form.username.id_for_label }}" class="form-label">
+                        {{ form.username.label }}
+                    </label>
+                    {{ form.username }}
+                    <div id="{{ form.username.id_for_label }}" class="form-text">
+                        {{ form.username.help_text }}
+                    </div>
+                    {% if form.username.errors %}
+                    <ul>
+                      {% for e in form.username.errors %}
+                      <li class="text-danger">{{ e }}</li>
+                      {% endfor %}
+                    </ul>
+                    {% endif %}
                 </div>
-                {% if form.username.errors %}
-                <ul>
-                    {% for e in form.username.errors %}
-                    <li class="text-danger">{{ e }}</li>
-                    {% endfor %}
-                </ul>
-                {% endif %}
-            </div>
 
-            <div class="mb-3">
-                <label for="{{ form.email.id_for_label }}" class="form-label">
-                    {{ form.email.label }}
-                </label>
-                {{ form.email }}
-                <div id="{{ form.email.id_for_label }}" class="form-text">
-                    {{ form.email.help_text }}
+                <div class="mb-3">
+                    <label for="{{ form.email.id_for_label }}" class="form-label">
+                        {{ form.email.label }}
+                    </label>
+                    {{ form.email }}
+                    <div id="{{ form.email.id_for_label }}" class="form-text">
+                        {{ form.email.help_text }}
+                    </div>
+                    {% if form.email.errors %}
+                    <ul>
+                      {% for e in form.email.errors %}
+                      <li class="text-danger">{{ e }}</li>
+                      {% endfor %}
+                    </ul>
+                    {% endif %}
                 </div>
-                {% if form.email.errors %}
-                <ul>
-                    {% for e in form.email.errors %}
-                    <li class="text-danger">{{ e }}</li>
-                    {% endfor %}
-                </ul>
-                {% endif %}
-            </div>
-        </li>
+            </li>
 
-        <li class="list-group-item"> {# pw section #}
-            <div class="mb-3">
-                <label for="{{ form.password.id_for_label }}" class="form-label">
-                    {{ form.password.label }}
-                </label>
-                {{ form.password }}
-                {% if form.password.errors %}
-                <ul>
-                    {% for e in form.password.errors %}
-                    <li class="text-danger">{{ e }}</li>
-                    {% endfor %}
-                </ul>
-                {% endif %}
-            </div>
+            <li class="list-group-item"> {# pw section #}
+                <div class="mb-3">
+                    <label for="{{ form.password.id_for_label }}" class="form-label">
+                        {{ form.password.label }}
+                    </label>
+                    {{ form.password }}
+                    {% if form.password.errors %}
+                    <ul>
+                      {% for e in form.password.errors %}
+                      <li class="text-danger">{{ e }}</li>
+                      {% endfor %}
+                    </ul>
+                    {% endif %}
+                </div>
 
-            <div class="mb-3">
-                <label for="{{ form.password2.id_for_label }}" class="form-label">
-                    {{ form.password2.label }}
-                </label>
-                {{ form.password2 }}
-                {% if form.password2.errors %}
-                <ul>
-                    {% for e in form.password2.errors %}
-                    <li class="text-danger">{{ e }}</li>
-                    {% endfor %}
-                </ul>
-                {% endif %}
-            </div>
-        </li>
-    </ul>
-    <div class="card-text">
-        <input class="btn btn-primary" type="submit" value="Register" />
-    </div>
-</form>
+                <div class="mb-3">
+                    <label for="{{ form.password2.id_for_label }}" class="form-label">
+                        {{ form.password2.label }}
+                    </label>
+                    {{ form.password2 }}
+                    {% if form.password2.errors %}
+                    <ul>
+                      {% for e in form.password2.errors %}
+                      <li class="text-danger">{{ e }}</li>
+                      {% endfor %}
+                    </ul>
+                    {% endif %}
+                </div>
+            </li>
+        </ul>
+        <div class="card-text">
+          <input class="btn btn-primary" type="submit" value="Register" />
+        </div>
+    </form>
+</div>
 
-<div class="container">
+<div class="card-footer d-flex flex-column">
     {% if form.non_field_errors %}
     <ul>
         {% for e in form.non_field_errors %}
@@ -88,8 +92,10 @@
     </ul>
     {% endif %}
 
-    <p class="">
+    <p class="card-text">
         {{ form.password2.help_text }}
     </p>
 </div>
 {% endblock %}
+
+{% block footer %}{% endblock %}

@@ -1,5 +1,10 @@
 {% extends "base.html" %}
 
 {% block content %}
-<p>hello world</p>
+<a
+        type="button"
+        href="{% url 'todays_list' %}"
+        class="btn btn-primary">
+    Today's Todo
+</a>
 {% endblock content %}

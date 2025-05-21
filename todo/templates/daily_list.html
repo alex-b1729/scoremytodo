@@ -5,14 +5,53 @@
 {% include 'partials/noindex_nofollow.html' %}
 {% endblock head %}
 
-{% block title %}{{ dailylist.date }} | {{ block.super }}{% endblock title %}
+{% block title %}{{ dailylist.created|date:'Y-m-d' }} | {{ block.super }}{% endblock title %}
 
 {% block content %}
-{% if tasks %}
-<ol>
-    {% for task in tasks %}
-    <li>{{ task.description }}</li>
+<h1>
+    {{ dailylist.created|date:'Y-m-d' }}
+    <small class="text-body-secondary">{{ dailylist.created|date:'l' }}</small>
+</h1>
+
+<table class="table">
+    <thead>
+    <tr class="">
+        <th scope="col" class=""></th>
+        <th scope="col">Todo</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr class="">
+        <td class="">
+            <div class="hover-circle">
+                <span class="checkmark">&#10003;</span>
+            </div>
+        </td>
+        <td>asdfasdf</td>
+    </tr>
+    {% for task in dailylist.tasks.all %}
+    <tr class="">
+        <td class="">
+            {% if task.completed %}
+            ✅
+            {% else %}
+            <div class="hover-circle" title="Mark completed">
+                <span class="checkmark">&#10003;</span>
+            </div>
+            {% endif %}
+        </td>
+        <td>{{ task.description }}</td>
+    </tr>
+    {% empty %}
+    <tr class="">
+        <td class="">
+            <div class="hover-circle">
+                <span class="checkmark">&#10003;</span>
+            </div>
+        </td>
+        <td>nothin here</td>
+    </tr>
     {% endfor %}
-</ol>
-{% endif %}
+    </tbody>
+</table>
 {% endblock content %}

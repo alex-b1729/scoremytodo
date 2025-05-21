@@ -42,6 +42,14 @@ urlpatterns = [
                 include([
                     path('', todo_views.DailyListView.as_view(), name='daily_list'),
                     path('delete/', todo_views.daily_list_delete, name='daily_list_delete'),
+                    path(
+                        'task/',
+                        include([
+                            path('create/', todo_views.TaskCreateUpdateView.as_view(), name='task_create'),
+                            path('<int:pk>/edit/', todo_views.TaskCreateUpdateView.as_view(), name='task_edit'),
+                            # path('<pk:int>/delete/', todo_views.TaskDeleteView.as_view(), name='task_delete'),
+                        ])
+                    )
                 ])
             ),
         ])

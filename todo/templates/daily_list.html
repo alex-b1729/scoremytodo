@@ -16,22 +16,18 @@
 <table class="table">
     <thead>
     <tr class="">
-        <th scope="col" class=""></th>
-        <th scope="col">Todo</th>
+        <th scope="col">
+            <button type="button" class="btn btn-success btn-sm">
+                <i class="bi bi-plus-lg"></i> New Task
+            </button>
+        </th>
+        <th scope="col"></th>
     </tr>
     </thead>
     <tbody>
-    <tr class="">
-        <td class="">
-            <div class="hover-circle">
-                <span class="checkmark">&#10003;</span>
-            </div>
-        </td>
-        <td>asdfasdf</td>
-    </tr>
     {% for task in dailylist.tasks.all %}
-    <tr class="">
-        <td class="">
+    <tr hx-target="this" hx-swap="outerHTML">
+        <td>
             {% if task.completed %}
             ✅
             {% else %}
@@ -40,7 +36,12 @@
             </div>
             {% endif %}
         </td>
-        <td>{{ task.description }}</td>
+        <td>
+            <button hx-get="{% url 'task_edit' dailylist.uid task.pk %}" class="btn btn-primary">
+                Edit
+            </button>
+            {{ task.description }}
+        </td>
     </tr>
     {% empty %}
     <tr class="">

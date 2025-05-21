@@ -1,0 +1,12 @@
+<tr class="">
+    <td class="">
+        {% if task.completed %}
+        ✅
+        {% else %}
+        <div class="hover-circle" title="Mark completed">
+            <span class="checkmark">&#10003;</span>
+        </div>
+        {% endif %}
+    </td>
+    <td>{{ task.description }}</td>
+</tr>

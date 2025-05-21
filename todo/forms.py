@@ -2,6 +2,8 @@ from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth import password_validation
 
+from todo import models
+
 
 class UserRegistrationForm(forms.ModelForm):
     password = forms.CharField(
@@ -34,3 +36,16 @@ class UserRegistrationForm(forms.ModelForm):
         user.set_password(self.cleaned_data['password2'])
         user.save(commit)
         return user
+
+
+class TaskEditForm(forms.ModelForm):
+    class Meta:
+        model = models.Task
+        fields = ('description',)
+        widgets = {
+            'daily_list': forms.HiddenInput,
+            'description': forms.TextInput(attrs={
+                'placeholder': 'New task',
+                'class': 'form-control',
+            })
+        }

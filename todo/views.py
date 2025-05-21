@@ -67,47 +67,70 @@ def dashboard(request):
 
 
 class TodaysList(View):
-    """Redirects a user's daily list or creates a new one"""
+    """Redirects to today's daily list or creates a new one"""
 
     daily_list = None
+    created: bool
 
-    def get(self, request, *args, **kwargs):
+    def dispatch(self, request, *args, **kwargs):
+        print('dispatching todayslist')
         if request.user.is_authenticated:
+            print('user authenticated')
             # retrieve users td for today or create a new one
-            daily_list, created = models.DailyList.objects.get_or_create(
+            self.daily_list, self.created = models.DailyList.objects.get_or_create(
                 owner=request.user,
                 created=dt.date.today(),
             )
-            return HttpResponseRedirect(
-                reverse('daily_list', kwargs={'uid': daily_list.uid})
-            )
         else:
-            return HttpResponse('no auth')
-
-
-class DailyListView(generic.DetailView):
-    model = models.DailyList
-    context_object_name = 'daily_list'
-    template_name = 'daily_list.html'
-
-    def dispatch(self, request, *args, **kwargs):
-        self.daily_list = get_object_or_404(
-            models.DailyList,
-            owner=request.user,
-            uid=kwargs['uid'],
-        )
+            print('user not auth, creating new list')
+            self.created = True
+            self.daily_list = models.DailyList.objects.create(
+                owner=None,
+                shareable=True,
+            )
         return super().dispatch(request, *args, **kwargs)
 
-    def get_queryset(self):
-        qs = super().get_queryset()
-        return qs.filter(daily_list=self.daily_list)
+    def get(self, request, *args, **kwargs):
+        if self.created:
+            messages.success(request, f'New todo list created')
+        else:
+            messages.success(request, f'Continue with today\'s todo')
+        return HttpResponseRedirect(
+            reverse('daily_list', kwargs={'uid': self.daily_list.uid})
+        )
+
+
+class DailyListView(generic.TemplateView):
+    template_name = 'daily_list.html'
+
+    dailylist = None
+
+    def dispatch(self, request, *args, **kwargs):
+        self.dailylist = None
+        obj = get_object_or_404(
+            models.DailyList,
+            uid=kwargs['uid'],
+        )
+        if (obj.owner == self.request.user) or obj.shareable:
+            print('request user can view')
+            self.dailylist = obj
+        else:
+            print('redirecting to new')
+            # todo should make explicit to user that they can't view the list they queried
+            messages.warning(self.request, 'You can\'t view that todo')
+            return HttpResponseRedirect(reverse('todays_list'))
+
+        return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context.update({
-            'daily_list': self.daily_list,
+            'dailylist': self.dailylist,
         })
         return context
+
+
+
 
 @login_required
 def daily_list_delete(request):

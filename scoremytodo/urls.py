@@ -24,16 +24,18 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('register/', todo_views.register, name='register'),
     path(
-        'account/',
+        'accounts/',
         include([
             path('', todo_views.account, name='account'),
+            path('', include('django.contrib.auth.urls')),
             path('delete/', todo_views.account_delete, name='account_delete')
         ])
     ),
-    path('dashboard/', todo_views.Dashboard.as_view(), name='dashboard'),
+    path('dashboard/', todo_views.dashboard, name='dashboard'),
     path(
         'todo/',
         include([
+            path('', todo_views.TodaysList.as_view(), name='todays_list'),
             path(
                 '<uuid:uid>/',
                 include([
@@ -44,5 +46,4 @@ urlpatterns = [
         ])
     ),
     path('', todo_views.index, name='index'),
-    path('', include('django.contrib.auth.urls')),
 ]

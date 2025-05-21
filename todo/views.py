@@ -1,3 +1,6 @@
+import datetime as dt
+
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, reverse, get_object_or_404
 
 from django.contrib import messages
@@ -55,23 +58,37 @@ def account_delete(request):
     )
 
 
-class Dashboard(
-    LoginRequiredMixin,
-    TemplateResponseMixin,
-    View,
-):
-    template_name = 'dashboard.html'
-    owner = None
+@login_required
+def dashboard(request):
+    return render(
+        request,
+        'dashboard.html',
+    )
 
 
-class DailyListView(
-    LoginRequiredMixin,
-    generic.ListView,
-):
-    model = models.Task
-    context_object_name = 'tasks'
-    template_name = 'daily_list.html'
+class TodaysList(View):
+    """Redirects a user's daily list or creates a new one"""
+
     daily_list = None
+
+    def get(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            # retrieve users td for today or create a new one
+            daily_list, created = models.DailyList.objects.get_or_create(
+                owner=request.user,
+                created=dt.date.today(),
+            )
+            return HttpResponseRedirect(
+                reverse('daily_list', kwargs={'uid': daily_list.uid})
+            )
+        else:
+            return HttpResponse('no auth')
+
+
+class DailyListView(generic.DetailView):
+    model = models.DailyList
+    context_object_name = 'daily_list'
+    template_name = 'daily_list.html'
 
     def dispatch(self, request, *args, **kwargs):
         self.daily_list = get_object_or_404(

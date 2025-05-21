@@ -29,6 +29,12 @@ class DailyList(models.Model):
         blank=True,
         default='',
     )
+    shareable = models.BooleanField(
+        default=False,
+        blank=False,
+        null=False,
+        editable=True,
+    )
 
     class Meta:
         ordering = ('-created',)

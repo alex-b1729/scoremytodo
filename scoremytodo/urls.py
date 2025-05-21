@@ -35,6 +35,7 @@ urlpatterns = [
     path(
         'todo/',
         include([
+            # todays_list redirects to a new or current list for today
             path('', todo_views.TodaysList.as_view(), name='todays_list'),
             path(
                 '<uuid:uid>/',

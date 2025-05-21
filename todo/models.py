@@ -42,7 +42,7 @@ class DailyList(models.Model):
         verbose_name_plural = 'daily lists'
 
     def __str__(self):
-        return f'{self.owner.username}: {self.created}'
+        return f'{self.owner}: {self.created}'
 
     def get_absolute_url(self):
         return reverse('daily_list', args=[str(self.uid)])

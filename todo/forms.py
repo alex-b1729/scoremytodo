@@ -49,3 +49,7 @@ class TaskEditForm(forms.ModelForm):
                 'class': 'form-control',
             })
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['description'].widget.attrs.update({'autofocus': 'autofocus'})

@@ -47,6 +47,12 @@ class DailyList(models.Model):
     def get_absolute_url(self):
         return reverse('daily_list', args=[str(self.uid)])
 
+    @property
+    def completed_percentage(self):
+        num_tasks = self.tasks.count()
+        num_completed = self.tasks.filter(completed=True).count()
+        return int(100 * num_completed / num_tasks)
+
 
 class Task(models.Model):
     daily_list = models.ForeignKey(

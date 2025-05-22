@@ -238,7 +238,13 @@ def task_delete(request, pk: int, uid: str):
         daily_list__uid=uid,
     )
     task.delete()
-    return HttpResponse(status=200)
+    return render(
+        request,
+        'partials/progress_bar.html',
+        {
+            'completed_percentage': task.daily_list.completed_percentage,
+        }
+    )
 
 
 @login_required
@@ -252,6 +258,9 @@ def task_toggle(request, pk: int, uid: str):
     task.toggle_completed()
     return render(
         request,
-        'partials/task_table_row.html',
-        {'task': task},
+        'partials/task_table_row_toggle_update.html',
+        {
+            'task': task,
+            'completed_percentage': task.daily_list.completed_percentage,
+        },
     )

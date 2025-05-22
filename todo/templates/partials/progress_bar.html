@@ -1,0 +1,13 @@
+<div
+        class="progress"
+        id="progress-bar"
+        hx-swap-oob="true"
+        role="progressbar"
+        aria-label="Daily List Progress"
+        aria-valuenow="{{ completed_percentage }}"
+        aria-valuemin="0"
+        aria-valuemax="100">
+    <div class="progress-bar" style="width: {{ completed_percentage }}%">
+        {{ completed_percentage }}&#37;
+    </div>
+</div>

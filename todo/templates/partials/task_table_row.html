@@ -1,5 +1,5 @@
-<tr class="">
-    <td class="">
+<tr hx-target="this" hx-swap="outerHTML">
+    <td>
         {% if task.completed %}
         ✅
         {% else %}
@@ -8,5 +8,10 @@
         </div>
         {% endif %}
     </td>
-    <td>{{ task.description }}</td>
+    <td>
+        <button hx-get="{% url 'task_edit' task.daily_list.uid task.pk %}" class="btn btn-primary">
+            Edit
+        </button>
+        {{ task.description }}
+    </td>
 </tr>

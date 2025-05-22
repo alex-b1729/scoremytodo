@@ -128,3 +128,9 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# uses name attribute of path() in profile/urls.py
+LOGIN_REDIRECT_URL = 'todays_list'
+LOGIN_URL = 'login'
+LOGOUT_REDIRECT_URL = 'index'
+LOGOUT_URL = 'logout'

@@ -17,7 +17,12 @@
     <thead>
     <tr class="">
         <th scope="col">
-            <button type="button" class="btn btn-success btn-sm">
+            <button
+                    hx-get="{% url 'task_create' dailylist.uid %}"
+                    hx-target="#new-task-placeholder"
+                    hx-swap="beforebegin"
+                    type="button"
+                    class="btn btn-success btn-sm">
                 <i class="bi bi-plus-lg"></i> New Task
             </button>
         </th>
@@ -53,6 +58,7 @@
         <td>nothin here</td>
     </tr>
     {% endfor %}
+    <tr id="new-task-placeholder"></tr>
     </tbody>
 </table>
 {% endblock content %}

@@ -4,7 +4,14 @@
         <form>
             {% csrf_token %}
             {{ form.description }}
-            <button hx-post="{% url 'task_edit' dailylist_uid form.instance.pk %}" hx-trigger="click" class="btn btn-primary btn-sm">
+            <button
+                    {% if form.instance.pk %}
+                    hx-post="{% url 'task_edit' dailylist_uid form.instance.pk %}"
+                    {% else %}
+                    hx-post="{% url 'task_create' dailylist_uid %}"
+                    {% endif %}
+                    hx-trigger="click"
+                    class="btn btn-primary btn-sm">
                 Save
             </button>
         </form>

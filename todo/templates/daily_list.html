@@ -7,14 +7,19 @@
 
 {% block title %}{{ dailylist.created|date:'Y-m-d' }} | {{ block.super }}{% endblock title %}
 
+{% block nav %}
+{% include 'partials/nav_daily_list.html' with dailylist=dailylist %}
+{% endblock nav %}
+
 {% block content %}
+{% comment %}
 <h1>
     {{ dailylist.created|date:'Y-m-d' }}
     <small class="text-body-secondary">{{ dailylist.created|date:'l' }}</small>
 </h1>
 
 {% include 'partials/progress_bar.html' with completed_percentage=dailylist.completed_percentage %}
-
+{% endcomment %}
 <ul class="list-group list-group-flush">
     {% include 'partials/task_edit.html' with dailylist_uid=dailylist.uid form=form %}
     {% for task in dailylist.tasks.all %}

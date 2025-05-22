@@ -1,6 +1,10 @@
 import datetime as dt
 
-from django.http import Http404, HttpResponseRedirect
+from django.http import (
+    Http404,
+    HttpResponse,
+    HttpResponseRedirect,
+)
 from django.shortcuts import render, reverse, get_object_or_404
 
 from django.contrib import messages
@@ -8,6 +12,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 
 from django.views import generic
+from django.views.decorators.http import require_POST
 from django.views.generic.base import TemplateResponseMixin, View
 
 from todo import forms
@@ -222,3 +227,15 @@ class TaskCreateUpdateView(View):
                 'dailylist_uid': self.dailylist.uid,
             },
         )
+
+
+@login_required
+@require_POST
+def task_delete(request, pk: int, uid: str):
+    task = get_object_or_404(
+        models.Task,
+        pk=pk,
+        daily_list__uid=uid,
+    )
+    task.delete()
+    return HttpResponse(status=200)

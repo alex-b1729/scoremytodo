@@ -13,18 +13,10 @@
     <small class="text-body-secondary">{{ dailylist.created|date:'l' }}</small>
 </h1>
 
-<table class="table table-hover">
-    <thead>
-    <tr class="">
-        <th scope="col"></th>
-        <th scope="col"></th>
-    </tr>
-    </thead>
-    <tbody>
+<ul class="list-group list-group-flush">
     {% include 'partials/task_edit.html' with dailylist_uid=dailylist.uid form=form %}
     {% for task in dailylist.tasks.all %}
     {% include 'partials/task_table_row.html' with task=task %}
     {% endfor %}
-    </tbody>
-</table>
+</ul>
 {% endblock content %}

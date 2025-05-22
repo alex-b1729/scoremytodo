@@ -1,32 +1,24 @@
-<tr id="task-{{ task.pk }}">
-    <td>
-        <div class="d-flex flex-row">
-            {% if task.completed %}
-            ✅
-            {% else %}
-            <div class="hover-circle me-3" title="Mark completed">
-                <span class="checkmark">&#10003;</span>
-            </div>
-            {% endif %}
-            <div class="me-3">
-                <a
-                        href="#"
-                        hx-post="{% url 'task_delete' task.daily_list.uid task.pk %}"
-                        hx-swap="delete"
-                        hx-target="#task-{{ task.pk }}"
-                        class="link-danger">
-                    <i class="bi bi-trash3"></i>
-                </a>
-            </div>
-        </div>
-    </td>
-    <td>
-        <a
-                hx-get="{% url 'task_edit' task.daily_list.uid task.pk %}"
-                hx-swap="outerHTML"
-                hx-target="#task-{{ task.pk }}"
-                style="cursor: pointer;">
+<li id="task-{{ task.pk }}" class="list-group-item">
+    <div class="d-flex flex-row">
+        <input
+                class="form-check-input me-3"
+                type="checkbox"
+                id="task-{{ task.pk }}-checkbox"
+                {% if task.completed %}
+                checked
+                {% endif %}>
+        <div id="task-{{ task.pk }}-description" class="me-3">
             {{ task.description }}
-        </a>
-    </td>
-</tr>
+        </div>
+        <div class="ms-auto">
+            <a
+                    href="#"
+                    hx-post="{% url 'task_delete' task.daily_list.uid task.pk %}"
+                    hx-swap="delete"
+                    hx-target="#task-{{ task.pk }}"
+                    class="link-danger">
+                <i class="bi bi-trash3"></i>
+            </a>
+        </div>
+    </div>
+</li>

@@ -16,26 +16,16 @@
 <table class="table">
     <thead>
     <tr class="">
-        <th scope="col">
-            <button
-                    hx-get="{% url 'task_create' dailylist.uid %}"
-                    hx-target="#new-task-placeholder"
-                    hx-swap="beforebegin"
-                    type="button"
-                    class="btn btn-success btn-sm">
-                <i class="bi bi-plus-lg"></i> New Task
-            </button>
-        </th>
+        <th scope="col"></th>
         <th scope="col"></th>
     </tr>
     </thead>
     <tbody>
     {% for task in dailylist.tasks.all %}
     {% include 'partials/task_table_row.html' with task=task %}
-    {% empty %}
-    {% include 'partials/task_edit.html' with dailylist_uid=dailylist.uid form=form %}
     {% endfor %}
-    <tr id="new-task-placeholder"></tr>
+<!--    <tr id="new-task-placeholder"></tr>-->
+    {% include 'partials/task_edit.html' with dailylist_uid=dailylist.uid form=form %}
     </tbody>
 </table>
 {% endblock content %}

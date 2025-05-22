@@ -50,8 +50,12 @@ class DailyList(models.Model):
     @property
     def completed_percentage(self):
         num_tasks = self.tasks.count()
-        num_completed = self.tasks.filter(completed=True).count()
-        return int(100 * num_completed / num_tasks)
+        if num_tasks == 0:
+            res = 0
+        else:
+            num_completed = self.tasks.filter(completed=True).count()
+            res = int(100 * num_completed / num_tasks)
+        return res
 
 
 class Task(models.Model):

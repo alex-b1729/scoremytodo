@@ -101,9 +101,14 @@ class DailyListView(generic.TemplateView):
     template_name = 'daily_list.html'
 
     dailylist = None
+    form = None
+
+    def get_form(self):
+        return forms.TaskEditForm()
 
     def dispatch(self, request, *args, **kwargs):
         self.dailylist = None
+        self.form = None
         obj = get_object_or_404(
             models.DailyList,
             uid=kwargs.get('uid'),
@@ -114,12 +119,16 @@ class DailyListView(generic.TemplateView):
             messages.warning(self.request, 'You can\'t view that todo')
             return HttpResponseRedirect(reverse('todays_list'))
 
+        if not self.dailylist.tasks.exists():
+            self.form = self.get_form()
+
         return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context.update({
             'dailylist': self.dailylist,
+            'form': self.form,
         })
         return context
 

@@ -1,4 +1,4 @@
-<tr hx-target="this" hx-swap="outerHTML">
+<tr hx-target="this" hx-swap="outerHTML" class="">
     <td>
         {% if task.completed %}
         ✅
@@ -9,9 +9,8 @@
         {% endif %}
     </td>
     <td>
-        <button hx-get="{% url 'task_edit' task.daily_list.uid task.pk %}" class="btn btn-primary">
-            Edit
-        </button>
-        {{ task.description }}
+        <a hx-get="{% url 'task_edit' task.daily_list.uid task.pk %}" style="cursor: pointer;">
+            {{ task.description }}
+        </a>
     </td>
 </tr>

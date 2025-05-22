@@ -1,19 +1,22 @@
 <tr hx-target="this" hx-swap="outerHTML">
-    <td>{{ form.instance.pk }}</td>
+    <td></td>
     <td>
         <form>
             {% csrf_token %}
-            {{ form.description }}
-            <button
-                    {% if form.instance.pk %}
-                    hx-post="{% url 'task_edit' dailylist_uid form.instance.pk %}"
-                    {% else %}
-                    hx-post="{% url 'task_create' dailylist_uid %}"
-                    {% endif %}
-                    hx-trigger="click"
-                    class="btn btn-primary btn-sm">
-                Save
-            </button>
+            <div class="input-group">
+                {{ form.description }}
+                <button
+                        {% if form.instance.pk %}
+                        hx-post="{% url 'task_edit' dailylist_uid form.instance.pk %}"
+                        {% else %}
+                        hx-post="{% url 'task_create' dailylist_uid %}"
+                        {% endif %}
+                        hx-trigger="click"
+                        class="btn btn-outline-primary btn-sm"
+                        id="button-addon">
+                    Save <i class="bi bi-arrow-return-left"></i>
+                </button>
+            </div>
         </form>
     </td>
 </tr>

@@ -70,7 +70,7 @@ class Task(models.Model):
     )
 
     class Meta:
-        ordering = ('order',)
+        ordering = ('-order',)
         verbose_name = 'task'
         verbose_name_plural = 'tasks'
 

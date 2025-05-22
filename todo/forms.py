@@ -46,10 +46,9 @@ class TaskEditForm(forms.ModelForm):
             'daily_list': forms.HiddenInput,
             'description': forms.TextInput(attrs={
                 'placeholder': 'New task',
-                'class': 'form-control',
+                'class': 'form-control form-control-sm',
+                'aria-label': 'New Task',
+                'aria-describedby': 'button-addon',
+                'autofocus': 'autofocus',
             })
         }
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['description'].widget.attrs.update({'autofocus': 'autofocus'})

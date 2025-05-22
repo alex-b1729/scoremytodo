@@ -228,7 +228,7 @@ class TaskCreateUpdateView(View):
             },
         )
 
-
+# todo verify ownership before allowing editing!
 @login_required
 @require_POST
 def task_delete(request, pk: int, uid: str):
@@ -239,3 +239,19 @@ def task_delete(request, pk: int, uid: str):
     )
     task.delete()
     return HttpResponse(status=200)
+
+
+@login_required
+@require_POST
+def task_toggle(request, pk: int, uid: str):
+    task = get_object_or_404(
+        models.Task,
+        pk=pk,
+        daily_list__uid=uid,
+    )
+    task.toggle_completed()
+    return render(
+        request,
+        'partials/task_table_row.html',
+        {'task': task},
+    )

@@ -75,4 +75,13 @@ class Task(models.Model):
         verbose_name_plural = 'tasks'
 
     def __str__(self):
-        return str(self.description)
+        return (
+            f'{self.daily_list.created}: '
+            f'[{"x" if self.completed else ""}] '
+            f'{self.description[:50]}'
+            f'{"..." if len(self.description)>50 else ""}'
+        )
+
+    def toggle_completed(self):
+        self.completed = not self.completed
+        self.save()

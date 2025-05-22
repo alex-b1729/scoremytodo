@@ -1,7 +1,12 @@
-<li id="task-{{ task.pk }}" class="list-group-item">
+<li
+        id="task-{{ task.pk }}"
+        class="list-group-item{% if task.completed %} list-group-item-success{% endif %}">
     <div class="d-flex flex-row">
         <input
                 class="form-check-input me-3"
+                hx-post="{% url 'task_toggle' task.daily_list.uid task.pk %}"
+                hx-swap="outerHTML"
+                hx-target="#task-{{ task.pk }}"
                 type="checkbox"
                 id="task-{{ task.pk }}-checkbox"
                 {% if task.completed %}

@@ -46,8 +46,14 @@ urlpatterns = [
                         'task/',
                         include([
                             path('create/', todo_views.TaskCreateUpdateView.as_view(), name='task_create'),
-                            path('<int:pk>/edit/', todo_views.TaskCreateUpdateView.as_view(), name='task_edit'),
-                            path('<int:pk>/delete/', todo_views.task_delete, name='task_delete'),
+                            path(
+                                '<int:pk>/',
+                                include([
+                                    path('edit/', todo_views.TaskCreateUpdateView.as_view(), name='task_edit'),
+                                    path('delete/', todo_views.task_delete, name='task_delete'),
+                                    path('toggle/', todo_views.task_toggle, name='task_toggle'),
+                                ])
+                            )
                         ])
                     )
                 ])

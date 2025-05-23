@@ -1,8 +1,16 @@
+import zoneinfo
+
 from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth import password_validation
 
 from todo import models
+
+
+TZ_DICT = dict()
+for tz in zoneinfo.available_timezones():
+    tz_split = tz.split('/')
+    TZ_DICT[tz_split[0]].append('/'.join(tz_split[1:]).replace('_', ' '))
 
 
 class UserRegistrationForm(forms.ModelForm):
@@ -52,3 +60,7 @@ class TaskEditForm(forms.ModelForm):
                 'autofocus': 'autofocus',
             })
         }
+
+
+class UserTzFormPart1(forms.Form):
+    pass

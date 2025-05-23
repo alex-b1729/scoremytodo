@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block title %}Account | {{ block.super }}{% endblock title %}
+
+{% block content %}
+
+<h1>Account</h1>
+
+<p>
+    Hi, {{ request.user.username }}!<br>
+    Member since: {{ request.user.date_joined|date:'Y-m-d' }}
+</p>
+
+<p>
+    Timezone info:
+</p>
+
+{% endblock content %}

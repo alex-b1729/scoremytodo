@@ -15,8 +15,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, include
-from django.contrib.auth import urls
+from django.urls import path, include, re_path
 
 from todo import views as todo_views
 
@@ -42,6 +41,11 @@ urlpatterns = [
                 include([
                     path('', todo_views.DailyListView.as_view(), name='daily_list'),
                     path('delete/', todo_views.daily_list_delete, name='daily_list_delete'),
+                    re_path(
+                        r"^day-(?P<direction>back|forward)/$",
+                        todo_views.daily_list_day_move,
+                        name='daily_list_day_move'
+                    ),
                     path(
                         'task/',
                         include([

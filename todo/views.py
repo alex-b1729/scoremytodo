@@ -143,6 +143,44 @@ def daily_list_delete(request):
     )
 
 
+@require_POST
+@login_required
+def daily_list_day_move(request, uid: str, direction: str):
+    dailylist = get_object_or_404(
+        models.DailyList,
+        owner=request.user,
+        uid=uid,
+    )
+    dir_multiple = -1 if direction == 'back' else 1
+    # check if previous user already has a list associated with that day
+    check_dl = models.DailyList.objects.filter(
+        owner=request.user,
+        effective_date=(dailylist.effective_date + dt.timedelta(days=1) * dir_multiple)
+    )
+    return_dl = None
+    if check_dl.exists():
+        # view returns check_dl if it exists and has associated tasks
+        # note: could cause odd behavior since checks *first* qs result but deletes all
+        if check_dl.first().tasks.exists():
+            return_dl = check_dl.first()
+        else:
+            # delete check_dl since no associated tasks
+            check_dl.delete()
+
+    if not return_dl:
+        # if a dailylist with the requested date doesn't exist or has no associated tasks
+        # move the date of this dailylist to requested date
+        if direction == 'back':
+            dailylist.move_effective_date_back()
+            return_dl = dailylist
+        elif direction == 'forward':
+            dailylist.move_effective_date_forward()
+            return_dl = dailylist
+    return HttpResponseRedirect(
+            reverse('daily_list', kwargs={'uid': return_dl.uid})
+        )
+
+
 class TaskCreateUpdateView(View):
     dailylist = None
     task = None

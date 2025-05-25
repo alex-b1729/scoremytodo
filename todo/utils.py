@@ -1,5 +1,6 @@
 import zoneinfo
 import datetime as dt
+from collections import defaultdict
 
 
 def calculate_dailylist_datetimes_from_created_dt_and_timezone(
@@ -31,3 +32,32 @@ def calculate_dailylist_datetimes_from_created_dt_and_timezone(
     locked_dt = locked_dt_in_tz.astimezone(dt.timezone.utc)
 
     return day_end, locked_dt
+
+
+class TzRegionChoices:
+    def __init__(self):
+        self.region_set = set(
+            reg.split('/')[0]
+            for reg in zoneinfo.available_timezones()
+        )
+        self.regions = ((reg, reg) for reg in sorted(self.region_set))
+
+
+class TzLocationChoices:
+    def __init__(self):
+        self.region2location = defaultdict(list)
+        for tz in zoneinfo.available_timezones():
+            tz_split = tz.split('/')
+            self.region2location[tz_split[0]].append('/'.join(tz_split[1:]))
+
+    def __getitem__(self, item):
+        return ((loc, loc) for loc in sorted(self.region2location[item]))
+
+
+if __name__ == '__main__':
+    # tzr = TzRegionChoices()
+    # for r in tzr.regions:
+    #     print(r)
+    tzl = TzLocationChoices()
+    for loc in tzl['EST']:
+        print(loc)

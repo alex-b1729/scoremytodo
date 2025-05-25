@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block title %}Select Timezone | {{ block.super }}{% endblock title %}
+
+{% block content %}
+<form method="post">
+    {% csrf_token %}
+    <div>
+        {{ region_form.region.label }}
+        <select
+                name="{{ region_form.region.html_name }}"
+                hx-get="{% url 'load_locations' %}"
+                hx-target="#{{ location_form.location.id_for_label}}"
+                id="{{ region_form.region.id_for_label}}">
+            {% for opt in region_form.region.field.choices %}
+            <option value="{{ opt.0 }}">{{ opt.1 }}</option>
+            {% endfor %}
+        </select>
+        {{ region_form.region.errors }}
+    </div>
+    <div>
+        {{ location_form.location.label }}
+        <select
+                name="{{ location_form.location.html_name }}"
+                id="{{ location_form.location.id_for_label}}">
+            {% for opt in location_form.location.field.choices %}
+            <option value="{{ opt.0 }}">{{ opt.1 }}</option>
+            {% endfor %}
+        </select>
+        {{ location_form.location.errors }}
+    </div>
+    <button class="btn btn-primary" type="submit" value="Submit">Submit</button>
+</form>
+{% endblock content %}

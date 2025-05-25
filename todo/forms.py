@@ -2,8 +2,10 @@ import zoneinfo
 
 from django import forms
 from django.contrib.auth import get_user_model
+from django.core.exceptions import ValidationError
 from django.contrib.auth import password_validation
 
+from . import utils
 from todo import models
 
 
@@ -61,9 +63,31 @@ class TaskEditForm(forms.ModelForm):
         }
 
 
-class UserTzFormPart1(forms.Form):
-    pass
+class UserTzRegionForm(forms.Form):
+    region = forms.ChoiceField(
+        choices=utils.TzRegionChoices().regions,
+        initial='America',  # don't like hard coding
+        required=True,
+    )
 
 
-class UserTzFormPart2(forms.Form):
-    pass
+class UserTzLocationForm(forms.Form):
+    def __init__(
+            self,
+            region: str = 'America',
+            *args, **kwargs
+    ):
+        self.region = region
+        super().__init__(*args, **kwargs)
+        self.fields['location'] = forms.ChoiceField(
+            choices=utils.TzLocationChoices()[self.region],
+            initial='Denver' if self.region == 'America' else '',
+            required=False,
+        )
+
+    def clean_location(self):
+        data = self.cleaned_data['location']
+        if data not in utils.TzLocationChoices().region2location[self.region]:
+            raise ValidationError(f'{data} is not a valid location in region {self.region}')
+
+        return data

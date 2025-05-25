@@ -31,6 +31,8 @@ urlpatterns = [
         ])
     ),
     path('dashboard/', todo_views.dashboard, name='dashboard'),
+    path('select-timezone/', todo_views.SelectTimezoneView.as_view(), name='select_timezone'),
+    path('select-timezone/locations/', todo_views.load_locations, name='load_locations'),
     path(
         'todo/',
         include([

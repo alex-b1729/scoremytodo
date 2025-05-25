@@ -19,9 +19,9 @@ from django.views.generic.base import TemplateResponseMixin, View
 
 from django.utils import timezone as django_timezone
 
+from . import utils
 from todo import forms
 from todo import models
-from todo.utils import calculate_dailylist_datetimes_from_created_dt_and_timezone
 
 
 def index(request):
@@ -108,7 +108,7 @@ def get_or_create_user_dailylist(
         reference_timezone=pref_tz,
     )
     new_dl.save()
-    day_end_dt, locked_dt = calculate_dailylist_datetimes_from_created_dt_and_timezone(
+    day_end_dt, locked_dt = utils.calculate_dailylist_datetimes_from_created_dt_and_timezone(
         created_dt=new_dl.created_dt,
         reference_timezone=pref_tz,
     )
@@ -304,3 +304,103 @@ def task_toggle(request, pk: int, uid: str):
             'completed_percentage': task.daily_list.completed_percentage,
         },
     )
+
+
+def load_locations(request):
+    region = request.GET.get('region-region')
+    try:
+        locations = utils.TzLocationChoices()[region]
+    except TypeError or IndexError:
+        return Http404
+    return render(
+        request,
+        'partials/location_dropdown_list_options.html',
+        {
+            'locations': locations,
+        }
+    )
+
+
+class SelectTimezoneView(
+    LoginRequiredMixin,
+    TemplateResponseMixin,
+    View,
+):
+    template_name = 'partials/select_timezone.html'
+    region_form = None
+    location_form = None
+    init_region: str
+    init_location: str
+    selected_region: str
+    selected_location: str
+    selected_tz: str
+
+    def set_region_form(self, data=None, files=None):
+        self.region_form = forms.UserTzRegionForm(
+            data=data,
+            initial={'region': self.init_region},
+            prefix='region',
+        )
+
+    def set_location_form(self, region: str, data=None, files=None):
+        self.location_form = forms.UserTzLocationForm(
+            data=data,
+            region=region,
+            initial={'location': self.init_location},
+            prefix='location',
+        )
+
+    def dispatch(self, request, *args, **kwargs):
+        self.init_region = request.GET.get('region')
+        self.init_location = request.GET.get('location')
+
+        if not self.init_region and not self.init_location:
+            # neither defined => set default
+            self.init_region = 'America'
+            self.init_location = 'Denver'
+        elif self.init_region and not self.init_location:
+            if self.init_region not in utils.TzRegionChoices().region_set:
+                self.init_region = 'America'
+        elif not self.init_region and self.init_location:
+            # can't specify init_location w/o init_region
+            self.init_region = 'America'
+            self.init_location = 'Denver'
+        else:
+            # both init_region, init_location are defined
+            if self.init_region not in utils.TzRegionChoices().region_set:
+                self.init_region = 'America'
+            else:
+                if self.init_location not in utils.TzLocationChoices().region2location[self.init_region]:
+                    # ignore init_location if not part of init_region
+                    self.init_location = 'Denver'
+
+        return super().dispatch(request, *args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        self.set_region_form()
+        self.set_location_form(region=self.init_region)
+        return self.render_to_response({
+            'region_form': self.region_form,
+            'location_form': self.location_form,
+        })
+
+    def post(self, request, *args, **kwargs):
+        self.set_region_form(data=request.POST)
+        self.selected_region = None
+        if self.region_form.is_valid():
+            # user's selected region
+            self.selected_region = self.region_form.cleaned_data['region']
+
+            self.set_location_form(region=self.selected_region, data=request.POST)
+            self.selected_location = None
+            if self.location_form.is_valid():
+                # user's selected location
+                self.selected_location = self.location_form.cleaned_data['location']
+
+                self.selected_tz = (f'{self.selected_region}'
+                                    f'{"/" + self.selected_location if self.selected_location else ""}')
+                return HttpResponse(f'selected tz is {self.selected_tz}!')
+        return self.render_to_response({
+            'region_form': self.region_form,
+            'location_form': self.location_form,
+        })

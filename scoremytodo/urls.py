@@ -41,11 +41,6 @@ urlpatterns = [
                 include([
                     path('', todo_views.DailyListView.as_view(), name='daily_list'),
                     path('delete/', todo_views.daily_list_delete, name='daily_list_delete'),
-                    re_path(
-                        r"^day-(?P<direction>back|forward)/$",
-                        todo_views.daily_list_day_move,
-                        name='daily_list_day_move'
-                    ),
                     path(
                         'task/',
                         include([

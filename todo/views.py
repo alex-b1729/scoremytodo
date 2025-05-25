@@ -5,9 +5,11 @@ from django.http import (
     HttpResponse,
     HttpResponseRedirect,
 )
-from django.shortcuts import render, reverse, get_object_or_404
+from django.shortcuts import render, reverse, get_object_or_404, redirect
 
 from django.contrib import messages
+from django.contrib.auth.models import User
+from django.contrib.auth import authenticate, login
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 
@@ -15,8 +17,11 @@ from django.views import generic
 from django.views.decorators.http import require_POST
 from django.views.generic.base import TemplateResponseMixin, View
 
+from django.utils import timezone as django_timezone
+
 from todo import forms
 from todo import models
+from todo.utils import calculate_dailylist_datetimes_from_created_dt_and_timezone
 
 
 def index(request):
@@ -33,11 +38,14 @@ def register(request):
             new_user = form.save()
             new_user.set_password(form.cleaned_data['password'])
             new_user.save()
-            messages.success(request, f'Welcome, {new_user.username}.')
-            return render(
-                request,
-                'dashboard.html',
+            models.Profile.objects.create(user=new_user)
+            new_user = authenticate(
+                username=form.cleaned_data['username'],
+                password=form.cleaned_data['password'],
             )
+            login(request, new_user)
+            messages.success(request, f'Welcome, {new_user.username}.')
+            return redirect('todays_list')
     else:
         form = forms.UserRegistrationForm()
     return render(
@@ -71,25 +79,57 @@ def dashboard(request):
     )
 
 
-class TodaysList(View):
+def get_or_create_user_dailylist(
+        user: User,
+) -> tuple[models.DailyList, bool]:
+    """
+    Given user either returns the DailyList associate with the user's current date if it exists
+    or creates a new DailyList object. Second returned value is bool indicating if new object was created.
+    :param user: The django user object
+    :return: DailyList object and bool indicating if the object is new
+    """
+    # check for existing DailyList object where end of day is greater than now
+    # note all the db timestamps are UTC
+    existing_dl_qs = models.DailyList.objects.filter(
+        owner=user,
+        day_end_dt__gt=django_timezone.now(),
+    )
+    # return if exists
+    # assumes there's only 1 object returned
+    if existing_dl_qs.exists():
+        return existing_dl_qs.first(), False
+
+    # otherwise create new dailylist for user
+    # get user's preferred timezone
+    pref_tz = user.profile.preferred_timezone
+    # init dailylist using preferred timezone
+    new_dl = models.DailyList(
+        owner=user,
+        reference_timezone=pref_tz,
+    )
+    new_dl.save()
+    day_end_dt, locked_dt = calculate_dailylist_datetimes_from_created_dt_and_timezone(
+        created_dt=new_dl.created_dt,
+        reference_timezone=pref_tz,
+    )
+    new_dl.day_end_dt = day_end_dt
+    new_dl.locked_dt = locked_dt
+    new_dl.save()
+
+    return new_dl, True
+
+
+class TodaysList(
+    LoginRequiredMixin,
+    View,
+):
     """Redirects to today's daily list or creates a new one"""
 
-    daily_list = None
+    daily_list: models.DailyList
     created: bool
 
     def dispatch(self, request, *args, **kwargs):
-        if request.user.is_authenticated:
-            # retrieve users td for today or create a new one
-            self.daily_list, self.created = models.DailyList.objects.get_or_create(
-                owner=request.user,
-                created=dt.date.today(),
-            )
-        else:
-            self.created = True
-            self.daily_list = models.DailyList.objects.create(
-                owner=None,
-                shareable=True,
-            )
+        self.daily_list, self.created = get_or_create_user_dailylist(request.user)
         return super().dispatch(request, *args, **kwargs)
 
     def get(self, request, *args, **kwargs):
@@ -102,23 +142,20 @@ class TodaysList(View):
         )
 
 
-class DailyListView(generic.TemplateView):
+class DailyListView(
+    LoginRequiredMixin,
+    generic.TemplateView,
+):
     template_name = 'daily_list.html'
 
-    dailylist = None
+    dailylist: models.DailyList
 
     def dispatch(self, request, *args, **kwargs):
-        self.dailylist = None
-        obj = get_object_or_404(
+        self.dailylist = get_object_or_404(
             models.DailyList,
+            owner=request.user,
             uid=kwargs.get('uid'),
         )
-        if (obj.owner == self.request.user) or obj.shareable:
-            self.dailylist = obj
-        else:
-            messages.warning(self.request, 'You can\'t view that todo')
-            return HttpResponseRedirect(reverse('todays_list'))
-
         return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
@@ -143,47 +180,12 @@ def daily_list_delete(request):
     )
 
 
-@require_POST
-@login_required
-def daily_list_day_move(request, uid: str, direction: str):
-    dailylist = get_object_or_404(
-        models.DailyList,
-        owner=request.user,
-        uid=uid,
-    )
-    dir_multiple = -1 if direction == 'back' else 1
-    # check if previous user already has a list associated with that day
-    check_dl = models.DailyList.objects.filter(
-        owner=request.user,
-        effective_date=(dailylist.effective_date + dt.timedelta(days=1) * dir_multiple)
-    )
-    return_dl = None
-    if check_dl.exists():
-        # view returns check_dl if it exists and has associated tasks
-        # note: could cause odd behavior since checks *first* qs result but deletes all
-        if check_dl.first().tasks.exists():
-            return_dl = check_dl.first()
-        else:
-            # delete check_dl since no associated tasks
-            check_dl.delete()
-
-    if not return_dl:
-        # if a dailylist with the requested date doesn't exist or has no associated tasks
-        # move the date of this dailylist to requested date
-        if direction == 'back':
-            dailylist.move_effective_date_back()
-            return_dl = dailylist
-        elif direction == 'forward':
-            dailylist.move_effective_date_forward()
-            return_dl = dailylist
-    return HttpResponseRedirect(
-            reverse('daily_list', kwargs={'uid': return_dl.uid})
-        )
-
-
-class TaskCreateUpdateView(View):
-    dailylist = None
-    task = None
+class TaskCreateUpdateView(
+    LoginRequiredMixin,
+    View,
+):
+    dailylist: models.DailyList
+    task: models.Task
     form = None
 
     def get_form(self, data=None, files=None):
@@ -201,11 +203,9 @@ class TaskCreateUpdateView(View):
         dailylist_uid = kwargs.get('uid')
         self.dailylist = get_object_or_404(
             models.DailyList,
+            owner=request.user,
             uid=dailylist_uid,
         )
-        # don't allow editing of non-shared dailylists that you're not owner of
-        if (self.dailylist.owner != request.user) and not self.dailylist.shareable:
-            raise Http404
 
         # get task if exists
         task_pk = kwargs.get('pk')
@@ -266,13 +266,14 @@ class TaskCreateUpdateView(View):
             },
         )
 
-# todo verify ownership before allowing editing!
+
 @login_required
 @require_POST
 def task_delete(request, pk: int, uid: str):
     task = get_object_or_404(
         models.Task,
         pk=pk,
+        daily_list__owner=request.user,
         daily_list__uid=uid,
     )
     task.delete()
@@ -291,6 +292,7 @@ def task_toggle(request, pk: int, uid: str):
     task = get_object_or_404(
         models.Task,
         pk=pk,
+        daily_list__owner=request.user,
         daily_list__uid=uid,
     )
     task.toggle_completed()

@@ -1,30 +1,8 @@
 <nav class="navbar navbar-expand-lg bg-body-tertiary flex-column">
     <div class="container-fluid">
-        <div class="navbar-brand d-flex align-items-center flex-row">
-            {% if dailylist.can_move_effective_date_back %}
-            <form
-                    method="post"
-                    action="{% url 'daily_list_day_move' uid=dailylist.uid direction='back' %}">
-                {% csrf_token %}
-                <button type="submit" class="btn" title="Move date back 1 day">
-                    <i class="bi bi-chevron-left" aria-description="Move date back 1 day"></i>
-                </button>
-            </form>
-            {% endif %}
-            <span>
-                {{ dailylist.effective_date|date:'Y-m-d' }}
-                <small class="text-body-secondary">{{ dailylist.effective_date|date:'l' }}</small>
-            </span>
-            {% if dailylist.can_move_effective_date_forward %}
-            <form
-                    method="post"
-                    action="{% url 'daily_list_day_move' uid=dailylist.uid direction='forward' %}">
-                {% csrf_token %}
-                <button type="submit" class="btn" title="Move date forward 1 day">
-                    <i class="bi bi-chevron-right" aria-description="Move date forward 1 day"></i>
-                </button>
-            </form>
-            {% endif %}
+        <div class="navbar-brand">
+            {{ dailylist.created_dt|date:'Y-m-d' }}
+            <small class="text-body-secondary">{{ dailylist.created_dt|date:'l' }}</small>
         </div>
         <ul class="navbar-nav px-3">
             {% if request.user.is_authenticated %}

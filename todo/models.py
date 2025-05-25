@@ -4,14 +4,30 @@ import datetime as dt
 from django.db import models
 from django.urls import reverse
 from django.conf import settings
-from django.utils import timezone
-from django.core.validators import ValidationError
+from django.utils import timezone as django_timezone
 
 from todo.fields import OrderField
 
 
+class Profile(models.Model):
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+
+    )
+
+    preferred_timezone = models.CharField(
+        max_length=50,
+        blank=False,
+        default='America/Denver',
+        editable=True,
+    )
+
+    def __str__(self):
+        return f'Profile of {self.user.username}'
+
+
 class DailyList(models.Model):
-    # todo: need to update timezone logic!
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
@@ -23,34 +39,47 @@ class DailyList(models.Model):
         default=uuid.uuid4,
         editable=False,
     )
-    created: dt.datetime = models.DateTimeField(
-        auto_now_add=True,
-    )
-    effective_date: dt.date = models.DateField(
-        # todo dt.date.today is naive. Make aware
-        default=dt.date.today,
+    reference_timezone = models.CharField(
+        max_length=50,
+        default='America/Denver',  # b/c it's my tz =)
         blank=False,
-        null=False,
         editable=True,
+    )
+    # created_dt, day_end_dt, locked_dt are timezone aware
+    created_dt: dt.datetime = models.DateTimeField(
+        auto_now_add=True,
+        help_text='UTC datetime of list creation',
+    )
+    day_end_dt: dt.datetime = models.DateTimeField(
+        null=True,
+        blank=True,
+        help_text='UTC datetime representing end of day in reference_timezone',
+    )
+    locked_dt: dt.datetime = models.DateTimeField(
+        null=True,
+        blank=True,
+        help_text='UTC datetime representing when user can no longer edit list',
     )
     notes = models.TextField(
         blank=True,
         default='',
     )
+    # todo: implement shareable logic
     shareable = models.BooleanField(
         default=False,
         blank=False,
         null=False,
         editable=True,
+        help_text='True if unauthenticated users can view',
     )
 
     class Meta:
-        ordering = ('-created',)
+        ordering = ('-created_dt',)
         verbose_name = 'daily list'
         verbose_name_plural = 'daily lists'
 
     def __str__(self):
-        return f'{self.owner}: {self.effective_date}'
+        return f'{self.owner}: {self.created_dt}'
 
     def get_absolute_url(self):
         return reverse('daily_list', args=[str(self.uid)])
@@ -67,37 +96,8 @@ class DailyList(models.Model):
 
     @property
     def can_edit(self) -> bool:
-        """True if now() is < 12 hours after end of effective_date"""
-        return (dt.datetime.now() - dt.timedelta(hours=12)).date() <= self.effective_date
-
-    @property
-    def can_move_effective_date_back(self) -> bool:
-        """effective_date can be at most one day behind created date"""
-        return self.effective_date >= self.created.date()
-
-    @property
-    def can_move_effective_date_forward(self) -> bool:
-        """effective_date can be at most one day ahead of created date"""
-        return self.effective_date <= self.created.date()
-
-    @property
-    def effective_date_is_valid(self) -> bool:
-        """effective_date can be +/- 1 day of created date"""
-        return abs(self.created.date() - self.effective_date) <= dt.timedelta(days=1)
-
-    def move_effective_date_back(self):
-        if self.can_move_effective_date_back:
-            self.effective_date -= dt.timedelta(days=1)
-            self.save()
-        else:
-            raise ValidationError("Effective date can be at most 1 day behind created date")
-
-    def move_effective_date_forward(self):
-        if self.can_move_effective_date_forward:
-            self.effective_date += dt.timedelta(days=1)
-            self.save()
-        else:
-            raise ValidationError("Effective date can be at most 1 day ahead of created date")
+        """True if aware datetime.now() is < self.locked_dt if locked_dt else True"""
+        return django_timezone.now() < self.locked_dt if self.locked_dt else True
 
 
 class Task(models.Model):
@@ -128,7 +128,7 @@ class Task(models.Model):
 
     def __str__(self):
         return (
-            f'{self.daily_list.created}: '
+            f'{self.daily_list.created_dt}: '
             f'[{"x" if self.completed else ""}] '
             f'{self.description[:50]}'
             f'{"..." if len(self.description)>50 else ""}'

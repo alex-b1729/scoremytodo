@@ -6,20 +6,24 @@
 {% include 'partials/noindex_nofollow.html' %}
 {% endblock head %}
 
-{% block title %}{{ dailylist.effective_date|date:'Y-m-d' }} | {{ block.super }}{% endblock title %}
+{% block title %}{{ dailylist.created_dt|date:'Y-m-d' }} | {{ block.super }}{% endblock title %}
 
 {% block nav %}
 {% include 'partials/nav_daily_list.html' with dailylist=dailylist %}
 {% endblock nav %}
 
 {% block content %}
-{% get_current_timezone as TIME_ZONE %}
-<h1>Your current timezone: {{ TIME_ZONE }}</h1>
+{% with ref_tz=dailylist.reference_timezone %}
 <p>
-    DailyList.created: {{ dailylist.created }}<br>
-    DailyList.created utc: {{ dailylist.created|utc }}<br>
-    DailyList.created America/Denver: {{ dailylist.created|timezone:"America/Denver" }}<br>
+    <small>
+        Todo timezone: {{ ref_tz }}
+        <a href="#">Change</a>
+        <br>
+        Todo created: {{ dailylist.created_dt|timezone:ref_tz }}
+    </small>
 </p>
+{% endwith %}
+
 <ul class="list-group list-group-flush">
     {% include 'partials/task_edit.html' with dailylist_uid=dailylist.uid form=form %}
     {% for task in dailylist.tasks.all %}

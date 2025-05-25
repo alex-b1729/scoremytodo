@@ -51,7 +51,6 @@ class TaskEditForm(forms.ModelForm):
         model = models.Task
         fields = ('description',)
         widgets = {
-            'daily_list': forms.HiddenInput,
             'description': forms.TextInput(attrs={
                 'placeholder': 'New task',
                 'class': 'form-control form-control-sm',

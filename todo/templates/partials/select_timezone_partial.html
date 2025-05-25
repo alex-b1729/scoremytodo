@@ -1,0 +1,50 @@
+{% load static %}
+<div class="d-grid gap-4 col-md-7 mx-auto">
+    <div class="card text-center">
+        <div class="card-body">
+            <h1 id="timeDisplay" class="card-title">--:--:--</h1>
+            <p id="dateDisplay" class="fs-3 card-text"></p>
+            <div id="errorMessage" class="error"></div>
+        </div>
+        <div id="currentTimezone" class="card-footer text-body-secondary">
+            Local time in
+        </div>
+    </div>
+    <form method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="{{ region_form.region.id_for_label }}" class="form-label">
+                {{ region_form.region.label }}
+            </label>
+            <select
+                    class="form-select"
+                    aria-label="Select timezone region"
+                    name="{{ region_form.region.html_name }}"
+                    hx-get="{% url 'load_location_form' %}"
+                    hx-target="#location-form-div"
+                    hx-swap="innerHTML"
+                    id="{{ region_form.region.id_for_label}}"
+                    autofocus>
+                {% for opt in region_form.region.field.choices %}
+                <option
+                        value="{{ opt.0 }}"
+                        {% if region_form.region.initial == opt.0 %}
+                        selected
+                        {% endif %}>{{ opt.1 }}</option>
+                {% endfor %}
+            </select>
+            {{ region_form.region.errors }}
+        </div>
+        <div class="mb-3" id="location-form-div">
+            {% include 'partials/location_select.html' with location_form=location_form %}
+        </div>
+        <button
+                id="tz-submit-button"
+                class="btn btn-primary"
+                type="submit"
+                value="Select Timezone">
+            Select Timezone
+        </button>
+    </form>
+</div>
+<script type="text/javascript" src="{% static 'js/display_time.js' %}"></script>

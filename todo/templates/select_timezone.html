@@ -1,0 +1,8 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Select Timezone | {{ block.super }}{% endblock title %}
+
+{% block content %}
+{% include 'partials/select_timezone_partial.html' with region_form=region_form location_form=location_form %}
+{% endblock content %}

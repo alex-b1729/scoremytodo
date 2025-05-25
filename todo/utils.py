@@ -51,13 +51,4 @@ class TzLocationChoices:
             self.region2location[tz_split[0]].append('/'.join(tz_split[1:]))
 
     def __getitem__(self, item):
-        return ((loc, loc) for loc in sorted(self.region2location[item]))
-
-
-if __name__ == '__main__':
-    # tzr = TzRegionChoices()
-    # for r in tzr.regions:
-    #     print(r)
-    tzl = TzLocationChoices()
-    for loc in tzl['EST']:
-        print(loc)
+        return ((loc, loc) for loc in sorted(self.region2location[item]) if loc != '')

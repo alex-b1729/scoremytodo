@@ -66,7 +66,6 @@ class TaskEditForm(forms.ModelForm):
 class UserTzRegionForm(forms.Form):
     region = forms.ChoiceField(
         choices=utils.TzRegionChoices().regions,
-        initial='America',  # don't like hard coding
         required=True,
     )
 
@@ -74,14 +73,13 @@ class UserTzRegionForm(forms.Form):
 class UserTzLocationForm(forms.Form):
     def __init__(
             self,
-            region: str = 'America',
+            region: str,
             *args, **kwargs
     ):
         self.region = region
         super().__init__(*args, **kwargs)
         self.fields['location'] = forms.ChoiceField(
             choices=utils.TzLocationChoices()[self.region],
-            initial='Denver' if self.region == 'America' else '',
             required=False,
         )
 

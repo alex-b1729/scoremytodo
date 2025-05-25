@@ -306,17 +306,22 @@ def task_toggle(request, pk: int, uid: str):
     )
 
 
-def load_locations(request):
+def load_location_form(request):
     region = request.GET.get('region-region')
-    try:
-        locations = utils.TzLocationChoices()[region]
-    except TypeError or IndexError:
-        return Http404
+    if region:
+        if region not in utils.TzRegionChoices().region_set:
+            return Http404
+    else:
+        region = 'America'
+    location_form = forms.UserTzLocationForm(
+        region=region,
+        prefix='location',
+    )
     return render(
         request,
-        'partials/location_dropdown_list_options.html',
+        'partials/location_select.html',
         {
-            'locations': locations,
+            'location_form': location_form,
         }
     )
 
@@ -326,7 +331,7 @@ class SelectTimezoneView(
     TemplateResponseMixin,
     View,
 ):
-    template_name = 'partials/select_timezone.html'
+    template_name = 'select_timezone.html'
     region_form = None
     location_form = None
     init_region: str
@@ -385,6 +390,7 @@ class SelectTimezoneView(
         })
 
     def post(self, request, *args, **kwargs):
+        print(request.POST)
         self.set_region_form(data=request.POST)
         self.selected_region = None
         if self.region_form.is_valid():

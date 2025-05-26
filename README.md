@@ -21,7 +21,6 @@ A daily todo list that tracks how much you've accomplished each day.
 * Add Dashboard
 * Allow users to add tasks until DailyList.day_end_dt and allow checking off tasks util DailyList.locked_dt
 * Reorder tasks w/i list
-* Fix messaging framework display
 
 ### Medium priority
 * Allow user to edit DailyList.notes

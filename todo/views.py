@@ -305,6 +305,7 @@ def task_toggle(request, pk: int, uid: str):
     )
 
 
+@login_required
 def load_location_form(request):
     region = request.GET.get('region-region')
     if region:

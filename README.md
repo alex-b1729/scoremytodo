@@ -3,9 +3,6 @@
 A daily todo list that tracks how much you've accomplished each day. 
 
 ## Todo
-### **IMPORTANT**
-- Enforce daily list owner permissions
-
 ### High priority
 - Add Dashboard
 - Reorder tasks w/i list

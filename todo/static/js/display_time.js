@@ -5,14 +5,11 @@ function getSelectedTimezone() {
     const region = document.getElementById("id_region-region").value;
     const location = document.getElementById("id_location-location").value;
     let selectedStrTz;
-    console.log(region);
-    console.log(location);
     if (location != "") {
         selectedStrTz = region.concat("/", location);
     } else {
         selectedStrTz = region;
     }
-    console.log(selectedStrTz)
     return selectedStrTz
 }
 

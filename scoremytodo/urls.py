@@ -27,11 +27,15 @@ urlpatterns = [
         include([
             path('', todo_views.account, name='account'),
             path('', include('django.contrib.auth.urls')),
-            path('delete/', todo_views.account_delete, name='account_delete')
+            path('delete/', todo_views.account_delete, name='account_delete'),
+            path(
+                'select-timezone/',
+                todo_views.SelectAccountTimezoneView.as_view(),
+                name='account_select_timezone'
+            ),
         ])
     ),
     path('dashboard/', todo_views.dashboard, name='dashboard'),
-    path('select-timezone/', todo_views.SelectTimezoneView.as_view(), name='select_timezone'),
     path('select-timezone/locations/', todo_views.load_location_form, name='load_location_form'),
     path(
         'todo/',
@@ -43,6 +47,11 @@ urlpatterns = [
                 include([
                     path('', todo_views.DailyListView.as_view(), name='daily_list'),
                     path('delete/', todo_views.daily_list_delete, name='daily_list_delete'),
+                    path(
+                        'select-timezone/',
+                        todo_views.SelectDailyListTimezoneView.as_view(),
+                        name='daily_list_select_timezone'
+                    ),
                     path(
                         'task/',
                         include([
@@ -56,7 +65,7 @@ urlpatterns = [
                                 ])
                             )
                         ])
-                    )
+                    ),
                 ])
             ),
         ])

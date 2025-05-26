@@ -1,5 +1,3 @@
-import datetime as dt
-
 from django.http import (
     Http404,
     HttpResponse,
@@ -169,6 +167,7 @@ class DailyListView(
 
 @login_required
 def daily_list_delete(request):
+    # todo make work
     if request.method == 'POST':
         print('deleted or something...')
     else:
@@ -356,6 +355,10 @@ class SelectTimezoneView(
         )
 
     def dispatch(self, request, *args, **kwargs):
+        self.get_initial_tz_or_set_default(request)
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_initial_tz_or_set_default(self, request):
         self.init_region = request.GET.get('region')
         self.init_location = request.GET.get('location')
 
@@ -379,18 +382,12 @@ class SelectTimezoneView(
                     # ignore init_location if not part of init_region
                     self.init_location = 'Denver'
 
-        return super().dispatch(request, *args, **kwargs)
-
     def get(self, request, *args, **kwargs):
         self.set_region_form()
         self.set_location_form(region=self.init_region)
-        return self.render_to_response({
-            'region_form': self.region_form,
-            'location_form': self.location_form,
-        })
+        return self.render_to_response(self.get_context_data())
 
     def post(self, request, *args, **kwargs):
-        print(request.POST)
         self.set_region_form(data=request.POST)
         self.selected_region = None
         if self.region_form.is_valid():
@@ -405,8 +402,83 @@ class SelectTimezoneView(
 
                 self.selected_tz = (f'{self.selected_region}'
                                     f'{"/" + self.selected_location if self.selected_location else ""}')
-                return HttpResponse(f'selected tz is {self.selected_tz}!')
-        return self.render_to_response({
+                return self.post_success()
+        return self.render_to_response(self.get_context_data())
+
+    def get_context_data(self):
+        return {
             'region_form': self.region_form,
             'location_form': self.location_form,
+        }
+
+    def post_success(self):
+        """
+        Returned by self.post() if all forms are valid.
+        Override on child classes to process self.selected_tz as appropriate.
+        Don't forget to return something.
+        """
+        return HttpResponse(f'selected tz is {self.selected_tz}!')
+
+
+class SelectDailyListTimezoneView(SelectTimezoneView):
+    template_name = 'partials/select_timezone_partial.html'
+    dailylist: models.DailyList
+
+    def dispatch(self, request, *args, **kwargs):
+        self.dailylist = get_object_or_404(
+            models.DailyList,
+            owner=request.user,
+            uid=kwargs.get('uid'),
+        )
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_initial_tz_or_set_default(self, request):
+        current_tz = str(self.dailylist.reference_timezone).split('/')
+        self.init_region = current_tz[0]
+        self.init_location = '/'.join(current_tz[1:])
+
+    def get_context_data(self):
+        context = super().get_context_data()
+        context.update({
+            'post_target': reverse(
+                'daily_list_select_timezone',
+                kwargs={'uid': self.dailylist.uid}
+            ),
+            'cancel_url': self.dailylist.get_absolute_url(),
         })
+        return context
+
+    def post_success(self):
+        self.dailylist.reference_timezone = self.selected_tz
+        self.dailylist.save()
+        return HttpResponseRedirect(self.dailylist.get_absolute_url())
+
+
+class SelectAccountTimezoneView(SelectTimezoneView):
+    template_name = 'partials/select_timezone_partial.html'
+    profile: models.Profile
+
+    def dispatch(self, request, *args, **kwargs):
+        self.profile = get_object_or_404(
+            models.Profile,
+            user=request.user,
+        )
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_initial_tz_or_set_default(self, request):
+        current_tz = str(self.profile.preferred_timezone).split('/')
+        self.init_region = current_tz[0]
+        self.init_location = '/'.join(current_tz[1:])
+
+    def get_context_data(self):
+        context = super().get_context_data()
+        context.update({
+            'post_target': reverse('account_select_timezone'),
+            'cancel_url': self.profile.get_absolute_url(),
+        })
+        return context
+
+    def post_success(self):
+        self.profile.preferred_timezone = self.selected_tz
+        self.profile.save()
+        return HttpResponseRedirect(self.profile.get_absolute_url())

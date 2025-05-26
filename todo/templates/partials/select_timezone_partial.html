@@ -1,5 +1,5 @@
 {% load static %}
-<div class="d-grid gap-4 col-md-7 mx-auto">
+<div id="change-timezone-div" class="d-grid gap-4 col-md-7 mx-auto">
     <div class="card text-center">
         <div class="card-body">
             <h1 id="timeDisplay" class="card-title">--:--:--</h1>
@@ -40,11 +40,20 @@
         </div>
         <button
                 id="tz-submit-button"
+                {% if post_target %}
+                formaction="{{ post_target }}"
+                {% endif %}
                 class="btn btn-primary"
                 type="submit"
                 value="Select Timezone">
             Select Timezone
         </button>
+        {% if cancel_url %}
+        <a
+                href="{{ cancel_url }}"
+                type="button"
+                class="btn btn-secondary">Cancel</a>
+        {% endif %}
     </form>
 </div>
 <script type="text/javascript" src="{% static 'js/display_time.js' %}"></script>

@@ -6,18 +6,27 @@
 {% include 'partials/noindex_nofollow.html' %}
 {% endblock head %}
 
-{% block title %}{{ dailylist.created_dt|date:'Y-m-d' }} | {{ block.super }}{% endblock title %}
+{% block title %}
+{{ dailylist.created_dt|timezone:dailylist.reference_timezone|date:'Y-m-d' }} |
+{{ block.super }}
+{% endblock title %}
 
 {% block nav %}
 {% include 'partials/nav_daily_list.html' with dailylist=dailylist %}
 {% endblock nav %}
 
 {% block content %}
+<div id="change-timezone-target-div"></div>
+
 {% with ref_tz=dailylist.reference_timezone %}
 <p>
     <small>
         Todo timezone: {{ ref_tz }}
-        <a href="#">Change</a>
+        <a
+                hx-get="{% url 'daily_list_select_timezone' uid=dailylist.uid %}"
+                hx-target="#change-timezone-target-div"
+                hx-swap="innerHTML"
+                href="#">Change</a>
         <br>
         Todo created: {{ dailylist.created_dt|timezone:ref_tz }}
     </small>

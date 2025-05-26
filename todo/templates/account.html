@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load tz %}
 
 {% block title %}Account | {{ block.super }}{% endblock title %}
 
@@ -6,13 +7,20 @@
 
 <h1>Account</h1>
 
+<div id="change-timezone-target-div"></div>
+
 <p>
-    Hi, {{ request.user.username }}!<br>
-    Member since: {{ request.user.date_joined|date:'Y-m-d' }}
+    Hi, {{ request.user.username }}.<br>
+    Member since: {{ request.user.date_joined|timezone:request.user.profile.preferred_timezone|date:'l, Y-m-d' }}
 </p>
 
 <p>
-    Timezone info:
+    Timezone info: {{ request.user.profile.preferred_timezone }}
+    (<a
+                hx-get="{% url 'account_select_timezone' %}"
+                hx-target="#change-timezone-target-div"
+                hx-swap="innerHTML"
+                href="#">Change</a>)
 </p>
 
 {% endblock content %}

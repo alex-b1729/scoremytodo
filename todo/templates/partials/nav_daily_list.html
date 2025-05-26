@@ -1,8 +1,11 @@
+{% load tz %}
 <nav class="navbar navbar-expand-lg bg-body-tertiary flex-column">
     <div class="container-fluid">
         <div class="navbar-brand">
-            {{ dailylist.created_dt|date:'Y-m-d' }}
-            <small class="text-body-secondary">{{ dailylist.created_dt|date:'l' }}</small>
+            {% with created_dt_tz=dailylist.created_dt|timezone:dailylist.reference_timezone %}
+            {{ created_dt_tz|date:'Y-m-d' }}
+            <small class="text-body-secondary">{{ created_dt_tz|date:'l' }}</small>
+            {% endwith %}
         </div>
         <ul class="navbar-nav px-3">
             {% if request.user.is_authenticated %}

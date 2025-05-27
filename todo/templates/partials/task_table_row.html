@@ -12,7 +12,12 @@
                 {% if task.completed %}
                 checked
                 {% endif %}>
-        <div id="task-{{ task.pk }}-description" class="me-3">
+        <div
+                id="task-{{ task.pk }}-description"
+                hx-get="{% url 'task_edit' task.daily_list.uid task.pk %}"
+                hx-swap="outerHTML"
+                hx-target="#task-{{ task.pk }}"
+                class="me-3">
             {{ task.description }}
         </div>
         <div class="ms-auto">

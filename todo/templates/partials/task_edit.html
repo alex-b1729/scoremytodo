@@ -1,6 +1,6 @@
 <li
         {% if form.instance.pk %}
-        id="task-{{ task.pk }}"
+        id="task-{{ form.instance.pk }}"
         {% else %}
         id="task-new"
         {% endif %}
@@ -10,27 +10,47 @@
                 class="form-check-input me-3"
                 type="checkbox"
                 disabled>
-        <div class="me-3">
-            <form>
-                {% csrf_token %}
-                <div class="input-group">
-                    {{ form.description }}
+        <form
+                {% if form.instance.pk %}
+                id="task-{{ form.instance.pk }}-form"
+                {% else %}
+                id="task-new-form"
+                {% endif %}
+                class="">
+            {% csrf_token %}
+            <div class="d-flex flex-row">
+                <div class="col flex-grow-1">
+                    <input
+                            type="text" name="{{ form.description.name }}"
+                            {% if form.instance.pk %}
+                            value="{{ form.description.value }}"
+                            aria-placeholder="Edit task"
+                            {% else %}
+                            placeholder="New task"
+                            aria-placeholder="New task"
+                            {% endif %}
+                            class="form-control form-control-sm border-0 border-bottom rounded-0 shadow-none p-0"
+                            maxlength="{{ form.description.field.max_length }}"
+                            id="{{ form.description.id_for_label }}"
+                            required autofocus>
+                </div>
+                <div class="col">
                     <button
                             {% if form.instance.pk %}
                             hx-post="{% url 'task_edit' dailylist_uid form.instance.pk %}"
-                            hx-target="#task-{{ task.pk }}"
+                            hx-target="#task-{{ form.instance.pk }}"
                             {% else %}
                             hx-post="{% url 'task_create' dailylist_uid %}"
                             hx-target="#task-new"
                             {% endif %}
                             hx-trigger="click"
                             hx-swap="outerHTML"
-                            class="btn btn-outline-primary btn-sm"
-                            id="button-addon">
-                        Save <i class="bi bi-arrow-return-left"></i>
+                            class="btn btn-outline-primary ms-2"
+                            style="--bs-btn-padding-y: .2rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">
+                        Save <i class="bi bi-arrow-return-left ms-1"></i>
                     </button>
                 </div>
-            </form>
-        </div>
+            </div>
+        </form>
     </div>
 </li>

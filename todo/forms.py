@@ -52,15 +52,6 @@ class TaskEditForm(forms.ModelForm):
     class Meta:
         model = models.Task
         fields = ('description',)
-        widgets = {
-            'description': forms.TextInput(attrs={
-                'placeholder': 'New task',
-                'class': 'form-control form-control-sm',
-                'aria-label': 'New Task',
-                'aria-describedby': 'button-addon',
-                'autofocus': 'autofocus',
-            })
-        }
 
 
 class UserTzRegionForm(forms.Form):

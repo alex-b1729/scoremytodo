@@ -1,6 +1,7 @@
 from django.http import (
     Http404,
     HttpResponse,
+    JsonResponse,
     HttpResponseRedirect,
 )
 from django.shortcuts import render, reverse, get_object_or_404, redirect
@@ -206,6 +207,16 @@ class TaskCreateUpdateView(
             uid=dailylist_uid,
         )
 
+        # cannot add / edit tasks after day end
+        if not self.dailylist.can_create_update_tasks:
+            return JsonResponse(
+                {
+                    'error': 'Todo list is locked',
+                    'message': 'Todo lists cannot be edited past midnight',
+                },
+                status=423,
+            )
+
         # get task if exists
         task_pk = kwargs.get('pk')
         if task_pk:
@@ -275,6 +286,17 @@ def task_delete(request, pk: int, uid: str):
         daily_list__owner=request.user,
         daily_list__uid=uid,
     )
+
+    # cannot delete tasks after dailylist is locked
+    if not task.can_create_update:
+        return JsonResponse(
+            {
+                'error': 'Todo list is locked',
+                'message': 'Todo list tasks cannot be edited past midnight',
+            },
+            status=423,
+        )
+
     task.delete()
     return render(
         request,
@@ -294,6 +316,17 @@ def task_toggle(request, pk: int, uid: str):
         daily_list__owner=request.user,
         daily_list__uid=uid,
     )
+
+    # cannot checkoff tasks past dailylist.locked_dt
+    if not task.can_checkoff:
+        return JsonResponse(
+            {
+                'error': 'Todo list is locked',
+                'message': 'Todo list tasks cannot be checked off after noon the next day',
+            },
+            status=423,
+        )
+
     task.toggle_completed()
     return render(
         request,

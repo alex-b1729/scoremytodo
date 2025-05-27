@@ -98,7 +98,12 @@ class DailyList(models.Model):
         return res
 
     @property
-    def can_edit(self) -> bool:
+    def can_create_update_tasks(self) -> bool:
+        """True if aware datetime.now() is < self.day_end_dt if day_end_dt else True"""
+        return django_timezone.now() < self.day_end_dt if self.day_end_dt else True
+
+    @property
+    def can_checkoff_tasks(self) -> bool:
         """True if aware datetime.now() is < self.locked_dt if locked_dt else True"""
         return django_timezone.now() < self.locked_dt if self.locked_dt else True
 
@@ -138,5 +143,16 @@ class Task(models.Model):
         )
 
     def toggle_completed(self):
-        self.completed = not self.completed
-        self.save()
+        if self.can_checkoff:
+            self.completed = not self.completed
+            self.save()
+
+    @property
+    def can_create_or_update(self) -> bool:
+        """True if aware datetime.now() is < dailytask.day_end_dt if day_end_dt else True"""
+        return self.daily_list.can_create_update_tasks
+
+    @property
+    def can_checkoff(self) -> bool:
+        """True if aware datetime.now() is < dailytask.locked_dt if locked_dt else True"""
+        return self.daily_list.can_checkoff_tasks

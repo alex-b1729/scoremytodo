@@ -3,23 +3,30 @@
         class="list-group-item{% if task.completed %} list-group-item-secondary{% endif %}">
     <div class="d-flex flex-row">
         <input
+                id="task-{{ task.pk }}-checkbox"
                 class="form-check-input me-3"
+                type="checkbox"
+                {% if task.can_checkoff %}
                 hx-post="{% url 'task_toggle' task.daily_list.uid task.pk %}"
                 hx-swap="outerHTML"
                 hx-target="#task-{{ task.pk }}"
-                type="checkbox"
-                id="task-{{ task.pk }}-checkbox"
+                {% else %}
+                disabled
+                {% endif %}
                 {% if task.completed %}
                 checked
                 {% endif %}>
         <div
                 id="task-{{ task.pk }}-description"
+                class="me-3{% if task.completed %} text-secondary{% endif %}"
+                {% if task.can_create_or_update %}
                 hx-get="{% url 'task_edit' task.daily_list.uid task.pk %}"
                 hx-swap="outerHTML"
                 hx-target="#task-{{ task.pk }}"
-                class="me-3{% if task.completed %} text-secondary{% endif %}">
+                {% endif %}>
             {{ task.description }}
         </div>
+        {% if task.can_create_or_update %}
         <div class="ms-auto">
             <a
                     href="#"
@@ -30,5 +37,6 @@
                 <i class="bi bi-trash3"></i>
             </a>
         </div>
+        {% endif %}
     </div>
 </li>

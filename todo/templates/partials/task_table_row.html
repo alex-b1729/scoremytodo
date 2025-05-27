@@ -1,6 +1,6 @@
 <li
         id="task-{{ task.pk }}"
-        class="list-group-item{% if task.completed %} list-group-item-success{% endif %}">
+        class="list-group-item{% if task.completed %} list-group-item-secondary{% endif %}">
     <div class="d-flex flex-row">
         <input
                 class="form-check-input me-3"
@@ -17,7 +17,7 @@
                 hx-get="{% url 'task_edit' task.daily_list.uid task.pk %}"
                 hx-swap="outerHTML"
                 hx-target="#task-{{ task.pk }}"
-                class="me-3">
+                class="me-3{% if task.completed %} text-secondary{% endif %}">
             {{ task.description }}
         </div>
         <div class="ms-auto">

@@ -20,7 +20,6 @@ A daily todo list that tracks how much you've accomplished each day.
 ### High priority
 * Add Dashboard
 * Allow users to add tasks until DailyList.day_end_dt and allow checking off tasks util DailyList.locked_dt
-* Reorder tasks w/i list
 
 ### Medium priority
 * Allow user to edit DailyList.notes
@@ -32,6 +31,9 @@ A daily todo list that tracks how much you've accomplished each day.
   * Chron job that deletes old unauthenticated user lists
   * Add shareable list toggle
   * Add link to share a shareable list
+* Tasks
+  * Reorder tasks w/i list
+  * Add categories / headings
 
 ### Low priority 
 * Favicon

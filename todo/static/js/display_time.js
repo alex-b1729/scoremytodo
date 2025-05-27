@@ -21,7 +21,7 @@ function getCurrentTime(timezone) {
             hour12: true,
             hour: '2-digit',
             minute: '2-digit',
-            second: '2-digit',
+            //second: '2-digit',
         };
 
         const dateOptions = {
@@ -83,7 +83,7 @@ function updateTimezone() {
     }
 
     updateTimeDisplay();
-    updateInterval = setInterval(updateTimeDisplay, 1000);
+    updateInterval = setInterval(updateTimeDisplay, 60000);
 }
 
 // When region form changes it fires an HTMX request which causes below to fire

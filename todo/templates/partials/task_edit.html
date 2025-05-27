@@ -5,7 +5,7 @@
         id="task-new"
         {% endif %}
         class="list-group-item">
-    <div class="d-flex flex-row">
+    <div class="d-flex flex-row align-items-center">
         <input
                 class="form-check-input me-3"
                 type="checkbox"
@@ -16,10 +16,10 @@
                 {% else %}
                 id="task-new-form"
                 {% endif %}
-                class="">
+                class="flex-grow-1">
             {% csrf_token %}
-            <div class="d-flex flex-row">
-                <div class="col flex-grow-1">
+            <div class="row">
+                <div class="col">
                     <input
                             type="text" name="{{ form.description.name }}"
                             {% if form.instance.pk %}
@@ -34,7 +34,7 @@
                             id="{{ form.description.id_for_label }}"
                             required autofocus>
                 </div>
-                <div class="col">
+                <div class="col-auto p-0">
                     <button
                             {% if form.instance.pk %}
                             hx-post="{% url 'task_edit' dailylist_uid form.instance.pk %}"

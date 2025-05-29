@@ -1,12 +1,26 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block head %}
 {{ block.super }}
 {% include 'partials/noindex_nofollow.html' %}
+
+<!-- Cal-Heatmap -->
+<link rel="stylesheet" href="https://unpkg.com/cal-heatmap/dist/cal-heatmap.css">
 {% endblock head %}
 
 {% block title %}Dashboard | {{ block.super }}{% endblock title %}
 
 {% block content %}
 <p>Dashboard!</p>
+
+<div id="cal-heatmap"></div>
 {% endblock content %}
+
+{% block scripts %}
+<script src="https://d3js.org/d3.v7.min.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/cal-heatmap/dist/cal-heatmap.min.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@popperjs/core@2"></script>
+<script src="https://unpkg.com/cal-heatmap/dist/plugins/Tooltip.min.js"></script>
+<script type="text/javascript" src="{% static 'js/score_heatmap.js' %}"></script>
+{% endblock scripts %}

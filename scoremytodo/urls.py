@@ -35,7 +35,13 @@ urlpatterns = [
             ),
         ])
     ),
-    path('dashboard/', todo_views.dashboard, name='dashboard'),
+    path(
+        'dashboard/',
+        include([
+            path('', todo_views.dashboard, name='dashboard'),
+            path('score-data/', todo_views.score_data, name='score_data'),
+        ])
+    ),
     path('select-timezone/locations/', todo_views.load_location_form, name='load_location_form'),
     path(
         'todo/',

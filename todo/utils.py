@@ -2,6 +2,13 @@ import zoneinfo
 import datetime as dt
 from collections import defaultdict
 
+import django.db.models.query
+from django.db.models import Avg, IntegerField
+from django.db.models.functions import Trunc, Cast
+from django.utils import timezone as django_timezone
+
+from todo import models
+
 
 def calculate_dailylist_datetimes_from_created_dt_and_timezone(
         created_dt: dt.datetime,
@@ -52,3 +59,16 @@ class TzLocationChoices:
 
     def __getitem__(self, item):
         return ((loc, loc) for loc in sorted(self.region2location[item]) if loc != '')
+
+
+def get_user_dailylist_score(
+        user,
+        days_back: int = 365,
+) -> django.db.models.query.QuerySet:
+    dailylist_score = models.Task.objects.filter(
+        daily_list__owner=user,
+        daily_list__created_dt__gt=(django_timezone.now() - dt.timedelta(days=days_back))
+    ).annotate(todo_date=Trunc('daily_list__created_dt', 'day'))\
+        .values('todo_date')\
+        .annotate(score=Avg(Cast('completed', output_field=IntegerField()), default=0))
+    return dailylist_score

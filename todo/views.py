@@ -1,3 +1,5 @@
+import zoneinfo
+
 from django.http import (
     Http404,
     HttpResponse,
@@ -67,14 +69,6 @@ def account_delete(request):
     return render(
         request,
         'account_delete.html',
-    )
-
-
-@login_required
-def dashboard(request):
-    return render(
-        request,
-        'dashboard.html',
     )
 
 
@@ -516,3 +510,35 @@ class SelectAccountTimezoneView(SelectTimezoneView):
         self.profile.preferred_timezone = self.selected_tz
         self.profile.save()
         return HttpResponseRedirect(self.profile.get_absolute_url())
+
+
+@login_required
+def dashboard(request):
+    return render(
+        request,
+        'dashboard.html',
+    )
+
+
+@login_required
+def score_data(request):
+    dailylist_score_qs = utils.get_user_dailylist_score(user=request.user)
+    user_tz = zoneinfo.ZoneInfo(request.user.profile.preferred_timezone)
+
+    processed_data = []
+
+    # todo i'd rather not loop through the values but for now
+    for item in dailylist_score_qs:
+        # convert into users tz
+        user_tz_timestamp = int(
+            item['todo_date'].astimezone(user_tz).replace(
+                hour=0, minute=0, second=0, microsecond=0
+            ).timestamp() * 1000
+        )
+        score = int(item['score'] * 100)
+        processed_data.append({
+            't': user_tz_timestamp,
+            'score': score,
+        })
+
+    return JsonResponse({'data': processed_data})

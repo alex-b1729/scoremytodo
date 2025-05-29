@@ -68,7 +68,7 @@ def get_user_dailylist_score(
     dailylist_score = models.Task.objects.filter(
         daily_list__owner=user,
         daily_list__created_dt__gt=(django_timezone.now() - dt.timedelta(days=days_back))
-    ).annotate(todo_date=Trunc('daily_list__created_dt', 'day'))\
-        .values('todo_date')\
+    )\
+        .values('daily_list__created_dt')\
         .annotate(score=Avg(Cast('completed', output_field=IntegerField()), default=0))
     return dailylist_score

@@ -529,15 +529,13 @@ def score_data(request):
 
     # todo i'd rather not loop through the values but for now
     for item in dailylist_score_qs:
-        # convert into users tz
-        user_tz_timestamp = int(
-            item['todo_date'].astimezone(user_tz).replace(
-                hour=0, minute=0, second=0, microsecond=0
-            ).timestamp() * 1000
-        )
+        user_tz_timestamp = item['daily_list__created_dt'].astimezone(user_tz).replace(
+            hour=0, minute=0, second=0, microsecond=0
+        ).strftime('%Y-%m-%d')
+
         score = int(item['score'] * 100)
         processed_data.append({
-            't': user_tz_timestamp,
+            'date': user_tz_timestamp,
             'score': score,
         })
 

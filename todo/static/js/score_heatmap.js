@@ -28,7 +28,7 @@ async function loadHeatmapData() {
             data: {
                 source: data,
                 type: 'json',
-                x: 't',
+                x: 'date',
                 y: 'score',
             },
             verticalOrientation: true,

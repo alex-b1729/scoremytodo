@@ -118,20 +118,14 @@ class TodaysList(
 ):
     """Redirects to today's daily list or creates a new one"""
 
-    daily_list: models.DailyList
-    created: bool
-
-    def dispatch(self, request, *args, **kwargs):
-        self.daily_list, self.created = get_or_create_user_dailylist(request.user)
-        return super().dispatch(request, *args, **kwargs)
-
     def get(self, request, *args, **kwargs):
-        if self.created:
+        daily_list, created = get_or_create_user_dailylist(request.user)
+        if created:
             messages.success(request, f'New todo list created')
         else:
             messages.success(request, f'Continue with today\'s todo')
         return HttpResponseRedirect(
-            reverse('daily_list', kwargs={'uid': self.daily_list.uid})
+            reverse('daily_list', kwargs={'uid': daily_list.uid})
         )
 
 

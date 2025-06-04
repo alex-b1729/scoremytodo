@@ -1,6 +1,6 @@
 # ScoreMyTodo
 
-A daily todo lists that track the percentage of tasks you complete each day.
+Daily todo lists that track the percentage of tasks you complete.
 
 ## How it works
 * Each day starts a new todo list.

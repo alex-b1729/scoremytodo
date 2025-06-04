@@ -1,31 +1,30 @@
 # ScoreMyTodo
 
-A daily todo list that tracks how much you've accomplished each day. 
+A daily todo lists that track the percentage of tasks you complete each day.
 
-## Features
-* Each day starts a new Todo list.
-* Add tasks to a list until midnight. 
-* Check-off tasks util noon the next day.
-* Each receives a score from 0-100 for the percentage of tasks completed.
+## How it works
+* Each day starts a new todo list.
+* Create & update todo list tasks until midnight. 
+* Check-off tasks until noon the next day. 
+* Each day's todo list receives a score from 0-100 for the percentage of tasks you check off. 
 * Track your accomplishments on your Dashboard. 
-* Set your preferred timezone or set individual for a particular Todo lists. 
+* Set your preferred timezone or set the timezone of individual todo lists. 
 
 ## Stack
-* Django
-* HTMX
+* [Django](https://www.djangoproject.com/) (5.2.1)
+* [HTMX](https://htmx.org/)
 * JavaScript
-* Bootstrap
+* [Bootstrap](https://getbootstrap.com/)
+* [Cal-Heatmap](https://cal-heatmap.com/)
 
 ## Todo
+
 ### High priority
-* Add Dashboard
+* Ability to find and view previous day's lists
 
 ### Medium priority
-* Allow user to edit DailyList.notes
-* Formalize / update color scheme
-* Unify / fix frontend look
-  * Index
-  * Login / register
+* Allow user to edit DailyList notes
+* Formalize & update color scheme
 * Support for shareable/public lists
   * Chron job that deletes old unauthenticated user lists
   * Add shareable list toggle
@@ -33,6 +32,9 @@ A daily todo list that tracks how much you've accomplished each day.
 * Tasks
   * Reorder tasks w/i list
   * Add categories / headings
+* Unify / fix frontend look
+  * Index
+  * Login / register
 
 ### Low priority 
 * Favicon

@@ -534,3 +534,30 @@ def score_data(request):
         })
 
     return JsonResponse({'data': processed_data})
+
+
+@login_required
+def change_dailylist(request, uid: str, direction: str):
+    this_dailylist = get_object_or_404(
+        models.DailyList,
+        owner=request.user,
+        uid=uid,
+    )
+    if direction == 'previous':
+        return_dailylist = models.DailyList.objects.filter(
+            owner=request.user,
+            created_dt__lt=this_dailylist.created_dt,
+        ).order_by('-created_dt').first()
+    elif direction == 'next':
+        return_dailylist = models.DailyList.objects.filter(
+            owner=request.user,
+            created_dt__gt=this_dailylist.created_dt,
+        ).order_by('created_dt').first()
+    else:
+        return Http404()
+    if not return_dailylist:
+        messages.error(request, f'You do not have a {direction} todo list.')
+        return_dailylist = this_dailylist
+    return HttpResponseRedirect(
+        reverse('daily_list', kwargs={'uid': return_dailylist.uid})
+    )

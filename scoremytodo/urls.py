@@ -58,6 +58,7 @@ urlpatterns = [
                         todo_views.SelectDailyListTimezoneView.as_view(),
                         name='daily_list_select_timezone'
                     ),
+                    re_path(r'^(?P<direction>previous|next)/$', todo_views.change_dailylist, name='change_daily_list'),
                     path(
                         'task/',
                         include([

@@ -22,7 +22,7 @@
 <p>
     <small>
         Todo timezone: {{ ref_tz }}
-        {% if dailylist.can_checkoff %}
+        {% if dailylist.can_checkoff_tasks %}
         <a
                 hx-get="{% url 'daily_list_select_timezone' uid=dailylist.uid %}"
                 hx-target="#change-timezone-target-div"

@@ -1,4 +1,5 @@
 import zoneinfo
+import datetime as dt
 
 from django.http import (
     Http404,
@@ -561,3 +562,23 @@ def change_dailylist(request, uid: str, direction: str):
     return HttpResponseRedirect(
         reverse('daily_list', kwargs={'uid': return_dailylist.uid})
     )
+
+
+@login_required
+def daily_list_by_date(request, year: str, month: str, date: str):
+    users_tz = zoneinfo.ZoneInfo(request.user.profile.preferred_timezone)
+    try:
+        requested_dt_user_tz = dt.datetime(int(year), int(month), int(date), tzinfo=users_tz)
+    except ValueError:
+        return Http404()
+
+    requested_dt = requested_dt_user_tz.astimezone(dt.timezone.utc)
+    print(requested_dt.date())
+
+    dailylist = get_object_or_404(
+        models.DailyList,
+        owner=request.user,
+        created_dt__date=requested_dt,
+    )
+
+    return HttpResponseRedirect(dailylist.get_absolute_url())

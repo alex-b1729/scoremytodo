@@ -48,6 +48,11 @@ urlpatterns = [
         include([
             # todays_list redirects to a new or current list for today
             path('', todo_views.TodaysList.as_view(), name='todays_list'),
+            re_path(
+                r'^(?P<year>[0-9]{4})-(?P<month>[0-9]{2})-(?P<date>[0-9]{2})/',
+                todo_views.daily_list_by_date,
+                name='daily_list_by_date'
+            ),
             path(
                 '<uuid:uid>/',
                 include([

@@ -21,17 +21,28 @@ async function loadHeatmapData() {
 //        document.getElementById('max-score').textContent = (stats.max_score * 100).toFixed(1) + '%';
 
     cal.on('click', (event, timestamp, value) =>{
-        console.log(
-            'On ' +
-            new Date(timestamp).toLocaleDateString() +
-            ', the score was ' +
-            value +
-            '%'
-        )
+        const dt = new Date(timestamp);
+        const dt_formatted = (
+            dt.getUTCFullYear() + '-' +
+            (dt.getUTCMonth() + 1).toString().padStart(2, '0') + '-' +
+            dt.getUTCDate().toString().padStart(2, '0')
+        );
+        if (value !== null) {
+            location.href = `/todo/${dt_formatted}`;
+        }
+    });
+
+    cal.on('mouseover', (event, timestamp, value) => {
+        if (value !== null) {
+            event.target.style.cursor = 'pointer';
+        }
     });
 
     // Clear loading message
     document.getElementById('cal-heatmap').innerHTML = '';
+
+    const today = new Date();
+    const firstOfLastMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1);
 
     cal.paint(
         {
@@ -42,9 +53,9 @@ async function loadHeatmapData() {
                 y: 'score',
                 defaultValue: null,
             },
-            verticalOrientation: true,
+            verticalOrientation: false,
             range: 2,
-            date: { start: new Date('2025-05-01') },
+            date: { start: firstOfLastMonth },
             scale: {
                 color: {
                     scheme: 'RdYlGn',
@@ -64,9 +75,9 @@ async function loadHeatmapData() {
                 Tooltip,
                 {
                     text: function (date, value, dayjsDate) {
-                        return (
-                            (value === null ? 'No todo list': value + '%') + ' on ' + dayjsDate.format('LL')
-                        );
+                        if (value !== null) {
+                            return (value + '%' + ' on ' + dayjsDate.format('LL'));
+                        }
                     },
                 },
             ],

@@ -4,10 +4,15 @@ from collections import defaultdict
 
 import django.db.models.query
 from django.db.models import Avg, IntegerField
-from django.db.models.functions import Trunc, Cast
+from django.db.models.functions import Trunc, Cast, Coalesce
 from django.utils import timezone as django_timezone
 
 from todo import models
+
+
+"""
+An eclectic mix of utility functions that deserve their own modules as they grow bigger. 
+"""
 
 
 def calculate_dailylist_datetimes_from_created_dt_and_timezone(
@@ -65,10 +70,13 @@ def get_user_dailylist_score(
         user,
         days_back: int = 365,
 ) -> django.db.models.query.QuerySet:
-    dailylist_score = models.Task.objects.filter(
-        daily_list__owner=user,
-        daily_list__created_dt__gt=(django_timezone.now() - dt.timedelta(days=days_back))
-    )\
-        .values('daily_list__created_dt')\
-        .annotate(score=Avg(Cast('completed', output_field=IntegerField()), default=0))
+    dailylist_score = models.DailyList.objects.filter(
+        owner=user,
+        created_dt__gt=(django_timezone.now() - dt.timedelta(days=days_back)),
+    ).annotate(
+        score=Coalesce(
+            Avg(Cast('task__completed', IntegerField())),
+            0.0,
+        ),
+    ).values_list('created_dt', 'score', named=True)
     return dailylist_score

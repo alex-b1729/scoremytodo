@@ -20,6 +20,16 @@ async function loadHeatmapData() {
 //        document.getElementById('avg-score').textContent = (stats.avg_score * 100).toFixed(1) + '%';
 //        document.getElementById('max-score').textContent = (stats.max_score * 100).toFixed(1) + '%';
 
+    cal.on('click', (event, timestamp, value) =>{
+        console.log(
+            'On ' +
+            new Date(timestamp).toLocaleDateString() +
+            ', the score was ' +
+            value +
+            '%'
+        )
+    });
+
     // Clear loading message
     document.getElementById('cal-heatmap').innerHTML = '';
 
@@ -30,11 +40,18 @@ async function loadHeatmapData() {
                 type: 'json',
                 x: 'date',
                 y: 'score',
+                defaultValue: null,
             },
             verticalOrientation: true,
             range: 2,
-            date: { start: new Date('2025-04-01') },
-            scale: { color: { type: 'diverging', scheme: 'PRGn', domain: [0, 100] } },
+            date: { start: new Date('2025-05-01') },
+            scale: {
+                color: {
+                    scheme: 'RdYlGn',
+                    domain: [0, 100],
+                    type: 'linear',
+                },
+            },
             domain: {
                 type: 'month',
                 padding: [10, 10, 10, 10],
@@ -48,7 +65,7 @@ async function loadHeatmapData() {
                 {
                     text: function (date, value, dayjsDate) {
                         return (
-                            (value ? value + '%': 'No todo list') + ' on ' + dayjsDate.format('LL')
+                            (value === null ? 'No todo list': value + '%') + ' on ' + dayjsDate.format('LL')
                         );
                     },
                 },

@@ -277,7 +277,7 @@ def task_delete(request, pk: int, uid: str):
     )
 
     # cannot delete tasks after dailylist is locked
-    if not task.can_create_update:
+    if not task.can_create_or_update:
         return JsonResponse(
             {
                 'error': 'Todo list is locked',

@@ -11,8 +11,11 @@
 {{ block.super }}
 {% endblock title %}
 
+{% block nav %}
+{% include 'partials/nav.html' with completed_percentage=dailylist.completed_percentage %}
+{% endblock %}
+
 {% block content %}
-<div id="change-timezone-target-div"></div>
 
 {% include 'partials/dailylist/head.html' with dailylist=dailylist %}
 

@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-lg bg-body-tertiary">
+<nav class="navbar navbar-expand-lg bg-body-tertiary flex-column">
     <div class="container-fluid">
         <a class="navbar-brand" href="/">ScoreMyTodo</a>
 
@@ -62,4 +62,10 @@
             </ul>
         </div>
     </div>
+
+    {% if completed_percentage is not None %}
+    <div class="container-fluid mt-2">
+        {% include 'partials/dailylist/progress_bar.html' with completed_percentage=completed_percentage %}
+    </div>
+    {% endif %}
 </nav>

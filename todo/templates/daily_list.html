@@ -11,15 +11,11 @@
 {{ block.super }}
 {% endblock title %}
 
-{% block nav %}
-{% include 'partials/nav.html' with dailylist=dailylist %}
-{% endblock nav %}
-
 {% block content %}
 <div id="change-timezone-target-div"></div>
 
-{% include 'partials/daily_list_head.html' with dailylist=dailylist %}
+{% include 'partials/dailylist/head.html' with dailylist=dailylist %}
 
-{% include 'partials/daily_list_tasks.html' with dailylist=dailylist %}
+{% include 'partials/dailylist/tasks.html' with dailylist=dailylist %}
 
 {% endblock content %}

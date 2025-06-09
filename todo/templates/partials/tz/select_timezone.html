@@ -36,7 +36,7 @@
             {{ region_form.region.errors }}
         </div>
         <div class="mb-3" id="location-form-div">
-            {% include 'partials/location_select.html' with location_form=location_form %}
+            {% include 'partials/tz/location_select.html' with location_form=location_form %}
         </div>
         <button
                 id="tz-submit-button"

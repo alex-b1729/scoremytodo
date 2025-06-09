@@ -1,0 +1,3 @@
+{% include 'partials/dailylist/progress_bar.html' with completed_percentage=task.daily_list.completed_percentage %}
+{% include 'partials/task/edit.html' with dailylist_uid=dailylist_uid form=form %}
+{% include 'partials/task/table_row.html' with task=task %}

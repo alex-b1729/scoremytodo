@@ -225,7 +225,7 @@ class TaskCreateUpdateView(
         self.form = self.get_form()
         return render(
             request,
-            'partials/task_edit.html',
+            'partials/task/edit.html',
             {
                 'form': self.form,
                 'dailylist_uid': self.dailylist.uid,
@@ -241,7 +241,7 @@ class TaskCreateUpdateView(
                 updated_task.save()
                 return render(
                     request,
-                    'partials/task_table_row.html',
+                    'partials/task/table_row.html',
                     {
                         'task': updated_task,
                     },
@@ -252,7 +252,7 @@ class TaskCreateUpdateView(
                 updated_task.save()
                 return render(
                     request,
-                    'partials/new_task_table_row.html',
+                    'partials/task/new_table_row.html',
                     {
                         'task': updated_task,
                         'form': self.get_form(),
@@ -262,7 +262,7 @@ class TaskCreateUpdateView(
         # non-valid form
         return render(
             request,
-            'partials/task_edit.html',
+            'partials/task/edit.html',
             {
                 'form': self.form,
                 'dailylist_uid': self.dailylist.uid,
@@ -293,7 +293,7 @@ def task_delete(request, pk: int, uid: str):
     task.delete()
     return render(
         request,
-        'partials/progress_bar.html',
+        'partials/dailylist/progress_bar.html',
         {
             'completed_percentage': task.daily_list.completed_percentage,
         }
@@ -323,7 +323,7 @@ def task_toggle(request, pk: int, uid: str):
     task.toggle_completed()
     return render(
         request,
-        'partials/task_table_row_toggle_update.html',
+        'partials/task/table_row_toggle_update.html',
         {
             'task': task,
             'completed_percentage': task.daily_list.completed_percentage,
@@ -345,7 +345,7 @@ def load_location_form(request):
     )
     return render(
         request,
-        'partials/location_select.html',
+        'partials/tz/location_select.html',
         {
             'location_form': location_form,
         }
@@ -448,7 +448,7 @@ class SelectTimezoneView(
 
 
 class SelectDailyListTimezoneView(SelectTimezoneView):
-    template_name = 'partials/select_timezone_partial.html'
+    template_name = 'partials/tz/select_timezone.html'
     dailylist: models.DailyList
 
     def dispatch(self, request, *args, **kwargs):
@@ -482,7 +482,7 @@ class SelectDailyListTimezoneView(SelectTimezoneView):
 
 
 class SelectAccountTimezoneView(SelectTimezoneView):
-    template_name = 'partials/select_timezone_partial.html'
+    template_name = 'partials/tz/select_timezone.html'
     profile: models.Profile
 
     def dispatch(self, request, *args, **kwargs):

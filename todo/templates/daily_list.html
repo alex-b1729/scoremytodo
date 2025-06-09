@@ -20,34 +20,6 @@
 
 {% include 'partials/daily_list_head.html' with dailylist=dailylist %}
 
-{% with ref_tz=dailylist.reference_timezone %}
-<p>
-    <small>
-        Todo timezone: {{ ref_tz }}
-        {% if dailylist.can_checkoff_tasks %}
-        <a
-                hx-get="{% url 'daily_list_select_timezone' uid=dailylist.uid %}"
-                hx-target="#change-timezone-target-div"
-                hx-swap="innerHTML"
-                href="#">Change</a>
-        {% endif %}
-        <br>
-        Todo created: {{ dailylist.created_dt|timezone:ref_tz }}
-        {% if not dailylist.can_checkoff_tasks %}
-        <br>Todo list is closed for editing.
-        {% elif not dailylist.can_create_update_tasks %}
-        <br>Tasks can not be created or updated but can still be checked off.
-        {% endif %}
-    </small>
-</p>
-{% endwith %}
+{% include 'partials/daily_list_tasks.html' with dailylist=dailylist %}
 
-<ul class="list-group list-group-flush">
-    {% if dailylist.can_create_update_tasks %}
-    {% include 'partials/task_edit.html' with dailylist_uid=dailylist.uid form=form %}
-    {% endif %}
-    {% for task in dailylist.tasks.all %}
-    {% include 'partials/task_table_row.html' with task=task %}
-    {% endfor %}
-</ul>
 {% endblock content %}

@@ -123,8 +123,6 @@ class TodaysList(
         daily_list, created = get_or_create_user_dailylist(request.user)
         if created:
             messages.success(request, f'New todo list created')
-        else:
-            messages.success(request, f'Continue with today\'s todo')
         return HttpResponseRedirect(
             reverse('daily_list', kwargs={'uid': daily_list.uid})
         )
@@ -478,6 +476,7 @@ class SelectDailyListTimezoneView(SelectTimezoneView):
     def post_success(self):
         self.dailylist.reference_timezone = self.selected_tz
         self.dailylist.save()
+        messages.success(self.request, f'Todo timezone updated')
         return HttpResponseRedirect(self.dailylist.get_absolute_url())
 
 
@@ -508,6 +507,7 @@ class SelectAccountTimezoneView(SelectTimezoneView):
     def post_success(self):
         self.profile.preferred_timezone = self.selected_tz
         self.profile.save()
+        messages.success(self.request, f'Profile timezone updated')
         return HttpResponseRedirect(self.profile.get_absolute_url())
 
 

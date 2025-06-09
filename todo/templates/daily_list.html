@@ -18,6 +18,8 @@
 {% block content %}
 <div id="change-timezone-target-div"></div>
 
+{% include 'partials/daily_list_head.html' with dailylist=dailylist %}
+
 {% with ref_tz=dailylist.reference_timezone %}
 <p>
     <small>

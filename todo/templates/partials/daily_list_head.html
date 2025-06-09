@@ -1,0 +1,46 @@
+{% load tz %}
+<div class="d-flex flex-column">
+    <div class="d-flex flex-column mx-auto justify-content-center align-items-center">
+        <div class="mb-0">
+            <a
+                    href="{% url 'change_daily_list' dailylist.uid 'previous' %}"
+                    class="btn"
+                    role="button">
+                <i class="bi bi-chevron-left"></i>
+            </a>
+            {% with created_dt_tz=dailylist.created_dt|timezone:dailylist.reference_timezone %}
+            <span id="list-date">
+                {{ created_dt_tz|date:'Y-m-d' }}
+                <small class="text-body-secondary">{{ created_dt_tz|date:'l' }}</small>
+            </span>
+            {% endwith %}
+            {% if not dailylist.can_create_update_tasks %}
+            {# This is a janky way to keep users from trying to move forward a day #}
+            {# when they are on today's list. #}
+            {# todo: Should explicitly check if there is a next (and previous!) todo #}
+            {# todo: this rearranges the layout when switch from today to not today #}
+            {# and only show arrow buttons if so. #}
+            <a
+                    href="{% url 'change_daily_list' dailylist.uid 'next' %}"
+                    class="btn"
+                    role="button">
+                <i class="bi bi-chevron-right"></i>
+            </a>
+            {% endif %}
+        </div>
+        {% if not dailylist.can_create_update_tasks %}
+        <div class="m-0">
+            <small>
+                <a class="" href="{% url 'todays_list' %}">
+                    Go to today's list
+                    <i class="bi bi-arrow-right-short"></i>
+                </a>
+            </small>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="container-fluid mt-2">
+        {% include 'partials/progress_bar.html' with completed_percentage=dailylist.completed_percentage %}
+    </div>
+</div>

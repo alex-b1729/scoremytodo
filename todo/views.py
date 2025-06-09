@@ -152,6 +152,10 @@ class DailyListView(
             'dailylist': self.dailylist,
             'form': forms.TaskEditForm(),
         })
+        if self.dailylist.day_end_dt >= django_timezone.now():
+            context.update({
+                'section': 'today',
+            })
         return context
 
 
@@ -512,6 +516,9 @@ def dashboard(request):
     return render(
         request,
         'dashboard.html',
+        {
+            'section': 'dashboard',
+        }
     )
 
 

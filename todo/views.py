@@ -253,6 +253,8 @@ class TaskCreateUpdateView(
                     'partials/task/new_table_row.html',
                     {
                         'task': updated_task,
+                        'completed_count': self.dailylist.completed_count,
+                        'total_count': self.dailylist.tasks.count(),
                         'form': self.get_form(),
                         'dailylist_uid': self.dailylist.uid,
                     },
@@ -291,8 +293,10 @@ def task_delete(request, pk: int, uid: str):
     task.delete()
     return render(
         request,
-        'partials/dailylist/progress_bar.html',
+        'partials/task/delete.html',
         {
+            'completed_count': task.daily_list.completed_count,
+            'total_count': task.daily_list.tasks.count(),
             'completed_percentage': task.daily_list.completed_percentage,
         }
     )
@@ -324,6 +328,8 @@ def task_toggle(request, pk: int, uid: str):
         'partials/task/table_row_toggle_update.html',
         {
             'task': task,
+            'completed_count': task.daily_list.completed_count,
+            'total_count': task.daily_list.tasks.count(),
             'completed_percentage': task.daily_list.completed_percentage,
         },
     )

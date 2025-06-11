@@ -1,82 +1,92 @@
 {% load tz %}
 
-<div class="d-inline-flex position-relative border border-{% if dailylist.can_create_update_tasks %}success{% elif dailylist.can_checkoff_tasks %}warning-subtle{% else %}secondary{% endif %} border-3 rounded p-4">
-    {% with created_dt_tz=dailylist.created_dt|timezone:dailylist.reference_timezone %}
-    <h1 id="list-date" class="display-3">
-        <small class="text-body-secondary">{{ created_dt_tz|date:'l' }}</small><br>
-        <span class="text-nowrap">{{ created_dt_tz|date:'Y-m-d' }}</span>
-    </h1>
-    {% endwith %}
+<div class="d-flex flex-column flex-md-row mb-3">
+    <div class="d-inline-flex position-relative justify-content-center border border-{% if dailylist.can_create_update_tasks %}success{% else %}secondary-subtle{% endif %} border-3 rounded p-4 mb-3">
+        {% with created_dt_tz=dailylist.created_dt|timezone:dailylist.reference_timezone %}
+        <h1 id="list-date" class="display-3">
+            <small class="text-body-secondary">{{ created_dt_tz|date:'l' }}</small><br>
+            <span class="text-nowrap">{{ created_dt_tz|date:'Y-m-d' }}</span>
+        </h1>
+        {% endwith %}
 
-    <div class="position-absolute top-100 start-50 translate-middle rounded bg-body">
-        <div class="btn-group" role="group" aria-label="Change date">
-            <a
-                    href="{% url 'change_daily_list' dailylist.uid 'previous' %}"
-                    role="button"
-                    aria-label="Previous date"
-                    title="Previous date"
-                    class="btn btn-outline-secondary">
-                <i class="bi bi-chevron-left"></i>
-            </a>
-            <a
-                    href="{% url 'todays_list' %}"
-                    type="button"
-                    class="btn btn-{% if not dailylist.can_create_update_tasks %}outline-{% endif %}success">
-                Today
-            </a>
-            {# Checking dailylist.can_create_update_tasks is a janky way to keep #}
-            {# users from trying to move forward a day #}
-            {# when they are on today's list. #}
-            {# todo: Should explicitly check if there is a next (and previous!) todo #}
-            {# todo: this rearranges the layout when switch from today to not today #}
-            {# and only show arrow buttons if so. #}
-            <a
-                    role="button"
-                    {% if not dailylist.can_create_update_tasks %}
-                    href="{% url 'change_daily_list' dailylist.uid 'next' %}"
-                    aria-label="Next date"
-                    title="Next date"
-                    class="btn btn-outline-secondary"
-                    {% else %}
-                    aria-disabled="true"
-                    class="btn btn-outline-secondary disabled"
-                    {% endif %}>
-                <i class="bi bi-chevron-right"></i>
-            </a>
+        <div class="position-absolute top-100 start-50 translate-middle rounded bg-body">
+            <div class="btn-group" role="group" aria-label="Change date">
+                <a
+                        href="{% url 'change_daily_list' dailylist.uid 'previous' %}"
+                        role="button"
+                        aria-label="Previous date"
+                        title="Previous date"
+                        class="btn btn-outline-secondary">
+                    <i class="bi bi-chevron-left"></i>
+                </a>
+                <a
+                        href="{% url 'todays_list' %}"
+                        type="button"
+                        class="btn btn-{% if not dailylist.can_create_update_tasks %}outline-{% endif %}success">
+                    Today
+                </a>
+                {# Checking dailylist.can_create_update_tasks is a janky way to keep #}
+                {# users from trying to move forward a day #}
+                {# when they are on today's list. #}
+                {# todo: Should explicitly check if there is a next (and previous!) todo #}
+                {# todo: this rearranges the layout when switch from today to not today #}
+                {# and only show arrow buttons if so. #}
+                <a
+                        role="button"
+                        {% if not dailylist.can_create_update_tasks %}
+                        href="{% url 'change_daily_list' dailylist.uid 'next' %}"
+                        aria-label="Next date"
+                        title="Next date"
+                        class="btn btn-outline-secondary"
+                        {% else %}
+                        aria-disabled="true"
+                        class="btn btn-outline-secondary disabled"
+                        {% endif %}>
+                    <i class="bi bi-chevron-right"></i>
+                </a>
+            </div>
         </div>
     </div>
+
+    {% with ref_tz=dailylist.reference_timezone %}
+    <div class="m-4">
+        <p class="mb-0">
+            <strong>Created:</strong> {{ dailylist.created_dt|timezone:ref_tz }}
+            <br>
+            <strong>Timezone:</strong> {{ ref_tz }}
+            {% if dailylist.can_checkoff_tasks %}
+            (<a
+                    hx-get="{% url 'daily_list_select_timezone' uid=dailylist.uid %}"
+                    hx-target="#change-timezone-target-div"
+                    hx-swap="innerHTML"
+                    href="#">Change</a>)
+            {% endif %}
+            <br>
+            <strong>Tasks:</strong>
+            {% include 'partials/task/completed_count.html' with completed_count=dailylist.completed_count total_count=dailylist.tasks.count %}
+        </p>
+    </div>
+    {% endwith %}
 </div>
 
 <div id="change-timezone-target-div" class="m-3"></div>
 
-{% with ref_tz=dailylist.reference_timezone %}
-<div class="my-3 p-2 border-start border-4 border-secondary-subtle">
-    <p class="mb-0">
-        <strong>Created:</strong> {{ dailylist.created_dt|timezone:ref_tz }}
-        <br>
-        <strong>Timezone:</strong> {{ ref_tz }}
-        {% if dailylist.can_checkoff_tasks %}
-        (<a
-                hx-get="{% url 'daily_list_select_timezone' uid=dailylist.uid %}"
-                hx-target="#change-timezone-target-div"
-                hx-swap="innerHTML"
-                href="#">Change</a>)
-        {% endif %}
-    </p>
-    {% if not dailylist.can_checkoff_tasks %}
-    <p class="mt-3 mb-0">
-        <u>Todo list is closed for editing.</u>
+{% if not dailylist.can_checkoff_tasks %}
+<div class="mb-3">
+    <p>
+        Todo list is closed for editing.
         <a href="#">
             <i class="bi bi-info-circle"></i>
         </a>
     </p>
-    {% elif not dailylist.can_create_update_tasks %}
-    <p class="mt-3 mb-0">
-        <u>Tasks can not be created or updated but can still be checked off.</u>
-        <a href="#">
-            <i class="bi bi-info-circle"></i>
-        </a>
-    </p>
-    {% endif %}
 </div>
-{% endwith %}
+{% elif not dailylist.can_create_update_tasks %}
+<div class="mb-3">
+    <p>
+        Tasks can not be created or updated but can still be checked off.
+        <a href="#">
+            <i class="bi bi-info-circle"></i>
+        </a>
+    </p>
+</div>
+{% endif %}

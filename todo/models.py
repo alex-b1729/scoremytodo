@@ -98,6 +98,10 @@ class DailyList(models.Model):
         return res
 
     @property
+    def completed_count(self) -> int:
+        return self.tasks.filter(completed=True).count()
+
+    @property
     def can_create_update_tasks(self) -> bool:
         """True if aware datetime.now() is < self.day_end_dt if day_end_dt else True"""
         return django_timezone.now() < self.day_end_dt if self.day_end_dt else True

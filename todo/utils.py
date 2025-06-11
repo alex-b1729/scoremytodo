@@ -3,7 +3,7 @@ import datetime as dt
 from collections import defaultdict
 
 import django.db.models.query
-from django.db.models import Avg, IntegerField
+from django.db.models import Avg, IntegerField, Count
 from django.db.models.functions import Trunc, Cast, Coalesce
 from django.utils import timezone as django_timezone
 
@@ -78,5 +78,6 @@ def get_user_dailylist_score(
             Avg(Cast('task__completed', IntegerField())),
             0.0,
         ),
-    ).values_list('created_dt', 'score', named=True)
+        task_count=Count('task'),
+    ).filter(task_count__gt=0).values_list('created_dt', 'score', named=True)
     return dailylist_score

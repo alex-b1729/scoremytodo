@@ -1,0 +1,21 @@
+<strong>Notes</strong>
+<div id="notes" class="">
+    {% if notes %}
+    <div
+            hx-get="{% url 'notes_edit' dailylist_uid %}"
+            hx-swap="outerHTML"
+            hx-target="#notes"
+            class="d-flex p-2 border rounded">
+        {{ notes|linebreaksbr }}
+    </div>
+    {% else %}
+    <a
+            hx-get="{% url 'notes_edit' dailylist_uid %}"
+            hx-target="#notes"
+            hx-swap="outerHTML"
+            class="btn btn-outline-primary btn-sm"
+            role="button">
+        <i class="bi bi-plus"></i> Add notes
+    </a>
+    {% endif %}
+</div>

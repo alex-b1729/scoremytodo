@@ -23,7 +23,6 @@ Daily todo lists that track the percentage of tasks you complete.
 * Ability to find and view previous day's lists
 
 ### Medium priority
-* Allow user to edit DailyList notes
 * Formalize & update color scheme
 * Support for shareable/public lists
   * Chron job that deletes old unauthenticated user lists

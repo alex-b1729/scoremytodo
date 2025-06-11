@@ -80,3 +80,9 @@ class UserTzLocationForm(forms.Form):
             raise ValidationError(f'{data} is not a valid location in region {self.region}')
 
         return data
+
+
+class DailyListNotesForm(forms.ModelForm):
+    class Meta:
+        model = models.DailyList
+        fields = ('notes',)

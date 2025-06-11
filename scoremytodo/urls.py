@@ -57,6 +57,7 @@ urlpatterns = [
                 '<uuid:uid>/',
                 include([
                     path('', todo_views.DailyListView.as_view(), name='daily_list'),
+                    path('notes-edit/', todo_views.DailyListUpdateNotesView.as_view(), name='notes_edit'),
                     path('delete/', todo_views.daily_list_delete, name='daily_list_delete'),
                     path(
                         'select-timezone/',

@@ -1,0 +1,28 @@
+<form id="notes-form" class="mt-3">
+    {% csrf_token %}
+    <div>
+        <textarea
+                name="{{ form.notes.name }}"
+                id="{{ form.notes.id_for_label }}"
+                rows="3"
+                class="w-100"
+                autofocus>{{ form.notes.value }}</textarea>
+    </div>
+
+    <div class="float-end">
+        <button
+                hx-post="{% url 'notes_edit' form.instance.uid %}"
+                hx-target="#notes-form"
+                hx-trigger="click"
+                hx-swap="outerHTML"
+                class="btn btn-outline-primary btn-sm">
+            Save
+        </button>
+        <a
+                href="{% url 'daily_list' form.instance.uid %}"
+                class="btn btn-outline-secondary btn-sm"
+                role="button">
+            Cancel
+        </a>
+    </div>
+</form>

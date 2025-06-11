@@ -595,3 +595,62 @@ def daily_list_by_date(request, year: str, month: str, date: str):
     )
 
     return HttpResponseRedirect(dailylist.get_absolute_url())
+
+
+class DailyListUpdateNotesView(
+    LoginRequiredMixin,
+    View,
+):
+    dailylist: models.DailyList
+    form = None
+
+    def get_form(self, data=None, files=None):
+        return forms.DailyListNotesForm(
+            instance=self.dailylist,
+            data=data,
+        )
+
+    def dispatch(self, request, *args, **kwargs):
+        self.dailylist = None
+        self.form = None
+
+        # get the daily list the task is part of
+        dailylist_uid = kwargs.get('uid')
+        self.dailylist = get_object_or_404(
+            models.DailyList,
+            owner=request.user,
+            uid=dailylist_uid,
+        )
+
+        return super().dispatch(request, *args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        self.form = self.get_form()
+        return render(
+            request,
+            'partials/dailylist/notes_edit.html',
+            {
+                'form': self.form,
+            },
+        )
+
+    def post(self, request, *args, **kwargs):
+        self.form = self.get_form(data=request.POST)
+        if self.form.is_valid():
+            updated_dailylist = self.form.save()
+            return render(
+                request,
+                'partials/dailylist/notes.html',
+                {
+                    'notes': updated_dailylist.notes,
+                    'dailylist_uid': updated_dailylist.uid,
+                }
+            )
+        # non-valid form
+        return render(
+            request,
+            'partials/dailylist/notes_edit.html',
+            {
+                'form': self.form,
+            },
+        )

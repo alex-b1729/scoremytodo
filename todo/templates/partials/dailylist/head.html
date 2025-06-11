@@ -1,15 +1,14 @@
 {% load tz %}
 
-<div class="row align-items-center">
-    <div class="col">
-        {% with created_dt_tz=dailylist.created_dt|timezone:dailylist.reference_timezone %}
-        <h1 id="list-date">
-            <span class="text-nowrap">{{ created_dt_tz|date:'Y-m-d' }}</span>
-            <small class="text-body-secondary">{{ created_dt_tz|date:'l' }}</small>
-        </h1>
-        {% endwith %}
-    </div>
-    <div class="col text-center">
+<div class="d-inline-flex position-relative border border-{% if dailylist.can_create_update_tasks %}success{% elif dailylist.can_checkoff_tasks %}warning-subtle{% else %}secondary{% endif %} border-3 rounded p-4">
+    {% with created_dt_tz=dailylist.created_dt|timezone:dailylist.reference_timezone %}
+    <h1 id="list-date" class="display-3">
+        <small class="text-body-secondary">{{ created_dt_tz|date:'l' }}</small><br>
+        <span class="text-nowrap">{{ created_dt_tz|date:'Y-m-d' }}</span>
+    </h1>
+    {% endwith %}
+
+    <div class="position-absolute top-100 start-50 translate-middle rounded bg-body">
         <div class="btn-group" role="group" aria-label="Change date">
             <a
                     href="{% url 'change_daily_list' dailylist.uid 'previous' %}"

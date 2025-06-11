@@ -1,11 +1,11 @@
-<strong>Notes</strong>
-<div id="notes" class="">
+<div id="notes" class="d-inline-flex flex-column">
+    <strong>Notes</strong>
     {% if notes %}
     <div
             hx-get="{% url 'notes_edit' dailylist_uid %}"
             hx-swap="outerHTML"
             hx-target="#notes"
-            class="d-flex p-2 border rounded">
+            class="d-flex p-2">
         {{ notes|linebreaksbr }}
     </div>
     {% else %}

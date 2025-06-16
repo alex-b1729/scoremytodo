@@ -20,17 +20,10 @@ Daily todo lists that track the percentage of tasks you complete.
 ## Todo
 
 ### High priority
-* Ability to find and view previous day's lists
+* Reorder tasks w/i list
 
 ### Medium priority
 * Formalize & update color scheme
-* Support for shareable/public lists
-  * Chron job that deletes old unauthenticated user lists
-  * Add shareable list toggle
-  * Add link to share a shareable list
-* Tasks
-  * Reorder tasks w/i list
-  * Add categories / headings
 * Unify / fix frontend look
   * Index
   * Login / register
@@ -39,3 +32,8 @@ Daily todo lists that track the percentage of tasks you complete.
 * Favicon
 * Support for users to export their data
 * Add task priority
+* Add task categories / headings
+* Support for shareable/public lists
+  * Chron job that deletes old unauthenticated user lists
+  * Add shareable list toggle
+  * Add link to share a shareable list

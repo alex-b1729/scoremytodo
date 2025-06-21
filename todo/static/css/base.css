@@ -1,22 +1,7 @@
-.hover-circle {
-    width: 1.5em;
-    height: 1.5em;
-    border-radius: 50%;
-    border: 2px solid black;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    position: relative;
+.task-handle {
+    cursor: grab;
 }
 
-.checkmark {
-    font-size: 1em;
-    color: #28a745;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
-
-.hover-circle:hover .checkmark {
-    opacity: 1;
+.task-handle:active {
+    cursor: grabbing;
 }

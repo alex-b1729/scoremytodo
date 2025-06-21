@@ -1,6 +1,7 @@
 <li
         id="task-{{ task.pk }}"
-        class="list-group-item{% if task.completed %} list-group-item-secondary{% endif %}">
+        class="list-group-item{% if task.completed %} list-group-item-secondary{% endif %}"
+        data-id="{{ task.pk }}">
     <div class="d-flex flex-row">
         <input
                 id="task-{{ task.pk }}-checkbox"
@@ -28,6 +29,11 @@
         </div>
         {% if task.can_create_or_update %}
         <div class="ms-auto">
+            <div class="task-handle me-3">
+                <i class="bi bi-arrows-expand"></i>
+            </div>
+        </div>
+        <div>
             <a
                     href="#"
                     hx-post="{% url 'task_delete' task.daily_list.uid task.pk %}"

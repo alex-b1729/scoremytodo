@@ -1,5 +1,6 @@
 import zoneinfo
 import datetime as dt
+from braces.views import CsrfExemptMixin, JsonRequestResponseMixin
 
 from django.http import (
     Http404,
@@ -654,3 +655,23 @@ class DailyListUpdateNotesView(
                 'form': self.form,
             },
         )
+
+
+class TaskOrderView(
+    CsrfExemptMixin,
+    JsonRequestResponseMixin,
+    View,
+):
+    def post(self, request, uid):
+        for pk, order in self.request_json.items():
+            t = models.Task.objects.get(
+                pk=pk,
+                daily_list__owner=request.user,
+                daily_list__uid=uid,
+            )
+            models.Task.objects.filter(
+                pk=pk,
+                daily_list__owner=request.user,
+                daily_list__uid=uid,
+            ).update(order=order)
+        return self.render_json_response({'saved': 'OK'})

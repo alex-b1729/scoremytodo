@@ -69,6 +69,7 @@ urlpatterns = [
                         'task/',
                         include([
                             path('create/', todo_views.TaskCreateUpdateView.as_view(), name='task_create'),
+                            path('order/', todo_views.TaskOrderView.as_view(), name='task_order'),
                             path(
                                 '<int:pk>/',
                                 include([

@@ -1,4 +1,4 @@
-<ul class="list-group list-group-flush">
+<ul id="tasks" class="list-group list-group-flush">
     {% if dailylist.can_create_update_tasks %}
     {% include 'partials/task/edit.html' with dailylist_uid=dailylist.uid form=form %}
     {% endif %}

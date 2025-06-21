@@ -22,3 +22,41 @@
 {% include 'partials/dailylist/tasks.html' with dailylist=dailylist %}
 
 {% endblock content %}
+
+{% block scripts %}
+<!-- jQuery CDN -->
+<script
+        src="https://code.jquery.com/jquery-3.7.1.min.js"
+        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+        crossorigin="anonymous"></script>
+<script
+        src="https://code.jquery.com/ui/1.14.1/jquery-ui.min.js"
+        integrity="sha256-AlTido85uXPlSyyaZNsjJXeCs07eSv3r43kyCVc8ChI="
+        crossorigin="anonymous"></script>
+<script>
+    $( document ).ready(function() {
+        $('#tasks').sortable({
+            handle: ".task-handle",
+            opacity: 0.7,
+            items: "li:not(#task-new)",
+            stop: function(event, ui) {
+                contents_order = {};
+                const items = $('#tasks').children().not('#task-new');
+                const total = items.length;
+                items.each(function() {
+                    const id = $(this).data('id');
+                    const index = items.index(this);
+                    contents_order[id] = total - index;
+                });
+                $.ajax({
+                    type: 'POST',
+                    url: '{% url 'task_order' dailylist.uid %}',
+                    contentType: 'application/json; charset=utf-8',
+                    dataType: 'json',
+                    data: JSON.stringify(contents_order)
+                });
+            }
+        });
+    });
+</script>
+{% endblock scripts %}
